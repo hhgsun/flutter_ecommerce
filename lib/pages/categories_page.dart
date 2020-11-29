@@ -1,5 +1,5 @@
 import 'package:ecommerceapp/constants.dart';
-import 'package:ecommerceapp/utils/show_dialog_custom.dart';
+import 'package:ecommerceapp/pages/product_list_page.dart';
 import 'package:flutter/material.dart';
 import 'package:woocommerce/models/product_category.dart';
 
@@ -35,9 +35,18 @@ class _CategoriesPageState extends State<CategoriesPage> {
                         ? Image(image: NetworkImage(cat.image?.src))
                         : Text("YOK"),
                     title: Text(cat.name),
+                    trailing: Text(cat.count.toString()),
                     onTap: () {
-                      showDialogCustom(context,
-                          title: cat.name, subTitle: cat.menuOrder.toString());
+                      /* showDialogCustom(context,
+                          title: cat.name, subTitle: cat.menuOrder.toString()); */
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => ProductListPage(
+                            title: cat.name,
+                            catId: cat.id.toString(),
+                          ),
+                        ),
+                      );
                     },
                   ))
               .toList(),
