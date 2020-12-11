@@ -8,9 +8,9 @@ class CategoriesPage extends StatefulWidget {
   _CategoriesPageState createState() => _CategoriesPageState();
 }
 
-List<WooProductCategory> cats = [];
-
 class _CategoriesPageState extends State<CategoriesPage> {
+  List<WooProductCategory> cats = [];
+
   @override
   void initState() {
     if (cats.length == 0) {
@@ -31,9 +31,9 @@ class _CategoriesPageState extends State<CategoriesPage> {
         child: Column(
           children: cats
               .map((cat) => ListTile(
-                    leading: cat.image?.src != null
+                    /* leading: cat.image?.src != null
                         ? Image(image: NetworkImage(cat.image?.src))
-                        : Text("YOK"),
+                        : Text("YOK"), */
                     title: Text(cat.name),
                     trailing: Text(cat.count.toString()),
                     onTap: () {

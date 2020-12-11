@@ -21,6 +21,9 @@ samples, guidance on mobile development, and a full API reference.
 
 Wordpress:
 1. JWT için eklentiyi kur: https://wordpress.org/plugins/jwt-authentication-for-wp-rest-api/
+  - wp-config.php dosyasına
+  define('JWT_AUTH_SECRET_KEY', 'your-top-secrect-key'); //HHGSUN
+  yukardaki kodu ekleyin define(NONCE_SALT..) alanından sonra eklenebilir.
 2. WooCommerce eklentisini kur
 3. WooCommerce consumerKey ve consumerSecret keylerini oluşturup constants.dart dosyasında ilgili alanlara ekle
 
