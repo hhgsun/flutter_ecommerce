@@ -7,9 +7,9 @@ import 'package:ecommerceapp/pages/home_page.dart';
 import 'package:ecommerceapp/pages/login_page.dart';
 import 'package:flutter/material.dart';
 
-class TabLayout extends StatefulWidget {
+class TabsLayout extends StatefulWidget {
   @override
-  _TabLayoutState createState() => _TabLayoutState();
+  _TabsLayoutState createState() => _TabsLayoutState();
 }
 
 class CustomTabPage {
@@ -18,7 +18,7 @@ class CustomTabPage {
   CustomTabPage({this.head, this.body});
 }
 
-class _TabLayoutState extends State<TabLayout> {
+class _TabsLayoutState extends State<TabsLayout> {
   int selectedPageIndex = 0;
 
   CustomTabPage tabViews(context, int index) => [

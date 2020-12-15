@@ -1,9 +1,5 @@
 import 'package:ecommerceapp/constants.dart';
-import 'package:ecommerceapp/pages/account_page.dart';
-import 'package:ecommerceapp/pages/cart_page.dart';
-import 'package:ecommerceapp/pages/categories_page.dart';
-import 'package:ecommerceapp/pages/favorites_page.dart';
-import 'package:ecommerceapp/pages/home_page.dart';
+import 'package:ecommerceapp/services/inherited_container.dart';
 import 'package:ecommerceapp/pages/login_page.dart';
 import 'package:ecommerceapp/pages/splashscreen_page.dart';
 import 'package:ecommerceapp/tabs_layout.dart';
@@ -22,7 +18,9 @@ class ECommerce extends StatelessWidget {
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: TabsContainer(),
+      home: BaseContainer(
+        child: TabsContainer(),
+      ),
       debugShowCheckedModeBanner: false,
     );
   }
@@ -45,22 +43,29 @@ class _TabsContainerState extends State<TabsContainer> {
       _statsAuth = STATS_AUTH.wait;
     });
     woocommerce.isCustomerLoggedIn().then((value) {
-      setState(() {
-        if (value) {
-          woocommerce.fetchLoggedInUserId().then((id) {
-            print("OTURUM AÇIK, USER ID: " + id.toString());
+      print("IS LOGGED IN: " + value.toString());
+      if (value) {
+        woocommerce.fetchLoggedInUserId().then((userid) {
+          print("LOGGED IN USER ID: " + userid.toString());
+          woocommerce.getCustomerById(id: userid).then((customer) {
+            loggedInCustomer = customer;
+            BaseContainer.of(context).data.fetchFromUserFavs();
+            setState(() {
+              _statsAuth = STATS_AUTH.login;
+            });
           });
-          _statsAuth = STATS_AUTH.login;
-        } else {
+        });
+      } else {
+        setState(() {
           _statsAuth = STATS_AUTH.logout;
-        }
-      });
+        });
+      }
     });
   }
 
   Widget _renderBody(context) {
     if (_statsAuth == STATS_AUTH.login) {
-      return TabLayout();
+      return TabsLayout();
     }
     if (_statsAuth == STATS_AUTH.logout) {
       return LoginPage();

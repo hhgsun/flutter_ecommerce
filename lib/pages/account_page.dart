@@ -1,3 +1,4 @@
+import 'package:ecommerceapp/constants.dart';
 import 'package:flutter/material.dart';
 
 class AccountPage extends StatefulWidget {
@@ -7,9 +8,14 @@ class AccountPage extends StatefulWidget {
 
 class _AccountPageState extends State<AccountPage> {
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Center(
-      child: Text("Hesabım"),
+      child: Text(loggedInCustomer.toJson().toString()),
     );
   }
 }

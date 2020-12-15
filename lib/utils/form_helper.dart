@@ -62,39 +62,43 @@ class FormHelper {
     );
   }
 
-  static Widget label(String labelName, {TextAlign textAlign = TextAlign.left}){
-    return new Padding(
+  static Widget label(String labelName,
+      {TextAlign textAlign = TextAlign.left}) {
+    return new Container(
       padding: EdgeInsets.fromLTRB(0, 10, 0, 5),
+      alignment: Alignment.bottomLeft,
       child: Text(
         labelName,
         textAlign: textAlign,
-        style: new TextStyle(
-          fontWeight: FontWeight.bold,
-          fontSize: 15.0,
-        ),
       ),
     );
   }
 
   static SizedBox spacer({double height = 20.0}) => SizedBox(height: height);
 
-  static Widget button(String buttonText, Function onTap,
-      {String color, String textColor, bool fullWidth}) {
+  static Widget button(
+    String buttonText,
+    Function onTap, {
+    bool fullWidth = false,
+    double width = 200.0,
+    double height = 50.0,
+    Color color = Colors.redAccent,
+    Color borderColor = Colors.redAccent,
+    Color textColor = Colors.white,
+  }) {
     return Container(
-      height: 50.0,
-      width: 150,
+      height: height,
+      width: fullWidth ? double.maxFinite : width,
       child: GestureDetector(
-        onTap: () {
-          onTap();
-        },
+        onTap: () => onTap(),
         child: Container(
           decoration: BoxDecoration(
             border: Border.all(
-              color: Colors.redAccent,
+              color: borderColor,
               style: BorderStyle.solid,
-              width: 1.0,
+              width: 2.0,
             ),
-            color: Colors.redAccent,
+            color: color,
             borderRadius: BorderRadius.circular(30.0),
           ),
           child: Row(
@@ -104,7 +108,7 @@ class FormHelper {
                 child: Text(
                   buttonText,
                   style: TextStyle(
-                    color: Colors.white,
+                    color: textColor,
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
                     letterSpacing: 1,

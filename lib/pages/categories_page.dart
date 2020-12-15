@@ -1,7 +1,6 @@
 import 'package:ecommerceapp/constants.dart';
 import 'package:ecommerceapp/pages/product_list_page.dart';
 import 'package:flutter/material.dart';
-import 'package:woocommerce/models/product_category.dart';
 
 class CategoriesPage extends StatefulWidget {
   @override
@@ -9,15 +8,13 @@ class CategoriesPage extends StatefulWidget {
 }
 
 class _CategoriesPageState extends State<CategoriesPage> {
-  List<WooProductCategory> cats = [];
-
   @override
   void initState() {
-    if (cats.length == 0) {
+    if (categories.length == 0) {
       woocommerce.getProductCategories().then((res) {
         print("res cats: " + res.length.toString());
         setState(() {
-          cats = res;
+          categories = res;
         });
       });
     }
@@ -26,10 +23,10 @@ class _CategoriesPageState extends State<CategoriesPage> {
 
   @override
   Widget build(BuildContext context) {
-    if (cats.length > 0) {
+    if (categories.length > 0) {
       return SingleChildScrollView(
         child: Column(
-          children: cats
+          children: categories
               .map((cat) => ListTile(
                     /* leading: cat.image?.src != null
                         ? Image(image: NetworkImage(cat.image?.src))

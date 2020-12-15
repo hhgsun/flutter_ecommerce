@@ -25,6 +25,11 @@ Wordpress:
   define('JWT_AUTH_SECRET_KEY', 'your-top-secrect-key'); //HHGSUN
   yukardaki kodu ekleyin define(NONCE_SALT..) alanından sonra eklenebilir.
 2. WooCommerce eklentisini kur
+  ## WooCommerce Ayarlar -> Hesaplar ve Gizlilik
+  - Misafir ödemesi -> hiçbiri işaretli olmamalı
+  - Hesap oluşturma bölümünde bu alanlar işaretlenmeli
+    - Bir hesap oluşturulurken müşterinin adı, soyadı veya e-posta adresine bağlı olarak bir hesap kullanıcı adı oluşturulur.
+
 3. WooCommerce consumerKey ve consumerSecret keylerini oluşturup constants.dart dosyasında ilgili alanlara ekle
 
 Android:
