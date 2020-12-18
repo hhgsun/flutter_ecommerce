@@ -1,8 +1,9 @@
 import 'package:ecommerceapp/constants.dart';
+import 'package:ecommerceapp/services/custom_api_service.dart';
 import 'package:ecommerceapp/services/inherited_container.dart';
 import 'package:ecommerceapp/pages/login_page.dart';
 import 'package:ecommerceapp/pages/splashscreen_page.dart';
-import 'package:ecommerceapp/tabs_layout.dart';
+import 'package:ecommerceapp/widgets/tabs_layout.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -56,8 +57,10 @@ class _TabsContainerState extends State<TabsContainer> {
           });
         });
       } else {
-        setState(() {
-          _statsAuth = STATS_AUTH.logout;
+        CustomApiService.createNonce().then((value) {
+          setState(() {
+            _statsAuth = STATS_AUTH.logout;
+          });
         });
       }
     });

@@ -15,7 +15,9 @@ class _AccountPageState extends State<AccountPage> {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Text(loggedInCustomer.toJson().toString()),
+      child: Text(loggedInCustomer != null
+          ? loggedInCustomer.toJson().toString()
+          : 'No Login User'),
     );
   }
 }

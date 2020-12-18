@@ -15,7 +15,18 @@ Text Domain: hhgsun
 
 // {domain}/wp-json/hhgsun/v1/author/1
 
+// https://github.com/woocommerce/woocommerce-gutenberg-products-block/blob/a404e5b24814240f15e50aa4f983b787bb9b36f1/src/StoreApi/docs/nonce-tokens.md
+// add_filter( 'woocommerce_store_api_disable_nonce_check', '__return_true' );
+
+
 $custom_restapi_requests = array(
+  new RequestRestApiModel(
+    "/get-nonce", "GET",
+    "kullaniciya sepet için nonce key döner",
+    function($req) {
+      return wp_create_nonce( 'wc_store_api' );
+    },
+  ),
   new RequestRestApiModel(
     "/user/favorites", "GET",
     "userid kullanıcısının favorileri (request: ?userid=999) (return: [list:id])",
@@ -131,6 +142,7 @@ class SupportRestApiForFlutter {
   public $requiredPlugins = array(
     array("woocommerce", "woocommerce.php", "automattic"),
     array("jwt-authentication-for-wp-rest-api", "jwt-auth.php", "Enrique Chavez"),
+    array("cart-rest-api-for-woocommerce", "cart-rest-api-for-woocommerce.php", "CoCart Lite - Sébastien Dumont"),
   ); // folder, file.php, Author
 
   public $nameSpaceRoute = "hhgsun/v1";
@@ -260,6 +272,17 @@ class SupportRestApiForFlutter {
       <h1><?php echo $this->pluginTitle; ?></h1>
   
       <?php
+        if($this->requiredPlugins) {
+          foreach ($this->requiredPlugins as $key => $value) {
+            $isActive = is_plugin_active($value[0]. '/' .$value[1]);
+            if ($isActive) {
+              echo '<p><b>'. $value[0] .'</b> ('. $value[2] .') AKTİF <span class="dashicons dashicons-saved"></span> </p>';
+            } else {
+              echo '<p><b>'. $value[0] .'</b> ('. $value[2] .') AKTİF DEĞİL <span class="dashicons dashicons-warning" style="color:#dc3232;"></span> </p>';
+            }
+          }
+        }
+
         if($this->disabledPluginsCount > 0) {
           die("<p><strong>Lütfen yukarıdaki eklentileri menüdeki eklentiler bölümünden isimlerini aratıp kurun ve aktif edin</strong></p></div>");
         }

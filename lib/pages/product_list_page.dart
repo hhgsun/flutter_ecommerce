@@ -1,6 +1,6 @@
 import 'package:ecommerceapp/constants.dart';
+import 'package:ecommerceapp/models/products.dart';
 import 'package:flutter/material.dart';
-import 'package:woocommerce/models/products.dart';
 
 class ProductListPage extends StatefulWidget {
   ProductListPage({Key key, this.title, this.catId}) : super(key: key);

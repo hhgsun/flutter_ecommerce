@@ -1,11 +1,11 @@
 import 'package:ecommerceapp/constants.dart';
+import 'package:ecommerceapp/models/customer.dart';
 import 'package:ecommerceapp/services/custom_api_service.dart';
-import 'package:ecommerceapp/tabs_layout.dart';
 import 'package:ecommerceapp/utils/form_helper.dart';
 import 'package:ecommerceapp/utils/loading_dialog.dart';
 import 'package:ecommerceapp/utils/show_dialog_custom.dart';
+import 'package:ecommerceapp/widgets/tabs_layout.dart';
 import 'package:flutter/material.dart';
-import 'package:woocommerce/models/customer.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -229,6 +229,12 @@ class _LoginPageState extends State<LoginPage> {
               _loginCustomer.password,
             );
           }, fullWidth: true),
+          Divider(height: 50),
+          FormHelper.button("Devam Et", () {
+            Navigator.of(context).push(
+              MaterialPageRoute(builder: (context) => TabsLayout()),
+            );
+          }, color: Colors.grey, borderColor: Colors.grey),
         ],
       );
 

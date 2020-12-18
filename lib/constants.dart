@@ -1,6 +1,8 @@
 import 'package:ecommerceapp/languages.dart';
+import 'package:ecommerceapp/models/customer.dart';
+import 'package:ecommerceapp/models/product_category.dart';
+import 'package:ecommerceapp/services/woocommerce.dart';
 import 'package:flutter/material.dart';
-import 'package:woocommerce/woocommerce.dart';
 
 ////////////////////////////////////////////////
 // CUSTOM SETTINGS ---- ////////////////////////
@@ -14,9 +16,6 @@ WooCommerce woocommerce = WooCommerce(
   consumerSecret: "cs_e3fe59f51fd0f1a389e143bfc85d37662856018a",
   isDebug: true,
 );
-const String customApiNamespace = "/wp-json/hhgsun/v1";
-const String lostPassUrlForWebView = "/hesabim/lost-password/";
-
 // colors
 const Color colorPrimary = Color.fromRGBO(63, 54, 164, 1);
 const Color colorSecondary = Color.fromRGBO(65, 224, 235, 1);
@@ -57,3 +56,17 @@ String getText(String key) {
 // CURRENT USER
 WooCustomer loggedInCustomer;
 List<WooProductCategory> categories = [];
+
+
+// CUSTOM
+// const String lostPassUrlForWebView = "/hesabim/lost-password/";
+const String customApiNamespace = "/wp-json/hhgsun/v1";
+
+//
+const String URL_STORE_API_PATH = '/wp-json/wc/store/';
+const URL_JWT_BASE = '/wp-json/jwt-auth/v1';
+const URL_JWT_TOKEN = '$URL_JWT_BASE/token';
+const DEFAULT_WC_API_PATH = "/wp-json/wc/v3/";
+const URL_WP_BASE = '/wp-json/wp/v2';
+const URL_USER_ME = '$URL_WP_BASE/users/me';
+const URL_REGISTER_ENDPOINT = '$URL_WP_BASE/users/register';

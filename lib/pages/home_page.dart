@@ -1,6 +1,6 @@
 import 'package:ecommerceapp/constants.dart';
+import 'package:ecommerceapp/models/products.dart';
 import 'package:flutter/material.dart';
-import 'package:woocommerce/models/products.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -21,9 +21,11 @@ class _HomePageState extends State<HomePage> {
     });
 
     woocommerce.getProducts().then((value) {
-      setState(() {
-        this._yenilikler = value;
-      });
+      if (value != null && value.length > 0) {
+        setState(() {
+          this._yenilikler = value;
+        });
+      }
     });
   }
 
@@ -32,9 +34,11 @@ class _HomePageState extends State<HomePage> {
             ? list
                 .map((e) => ListTile(
                       title: Text(e.name),
-                      leading: e.images.length > 0 ? Image(
-                        image: NetworkImage(e.images[0].src),
-                      ) : Text("NO IMG"),
+                      leading: e.images.length > 0
+                          ? Image(
+                              image: NetworkImage(e.images[0].src),
+                            )
+                          : Text("NO IMG"),
                     ))
                 .toList()
             : [Text("BOŞ")],

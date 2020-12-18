@@ -1,23 +1,10 @@
 import 'package:ecommerceapp/constants.dart';
 import 'package:ecommerceapp/services/custom_api_service.dart';
 import 'package:flutter/material.dart';
-import 'package:woocommerce/models/cart.dart';
-import 'package:woocommerce/models/products.dart';
 
 // base data
 class BaseContainerState<T> extends State<BaseContainer> {
-
-  // Cart 
-  
-  // https://github.com/co-cart/co-cart //bu wp için sepet rest api eklentisi
-
-  WooCart cart = new WooCart();
-
-  void addCart(WooProduct p){
-    cart.items.forEach((element) {
-      
-    });
-  }
+  // Cart
 
   // Favorites
 
@@ -53,13 +40,18 @@ class BaseContainerState<T> extends State<BaseContainer> {
   }
 
   void fetchFromUserFavs() {
-    dynamic favs = loggedInCustomer.metaData
-        .where((m) => m.key == 'favorite_products')
-        .first
-        .value;
-    setState(() {
-      this.favs = List.from(favs).map((e) => e.toString()).toList();
-    });
+    if (loggedInCustomer == null) {
+      this.favs = new List();
+      return;
+    }
+    Iterable meta =
+        loggedInCustomer.metaData.where((m) => m.key == 'favorite_products');
+    if (meta != null && meta.length > 0) {
+      List<dynamic> favs = meta.first.value;
+      setState(() {
+        this.favs = List.from(favs).map((e) => e.toString()).toList();
+      });
+    }
   }
 
   @override
