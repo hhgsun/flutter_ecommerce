@@ -1,7 +1,7 @@
-class WooCart {
+/* class WooCart {
   String currency;
   int itemCount;
-  List<WooCartItems> items;
+  List<WooCartItem> items;
   bool needsShipping;
   String totalPrice;
   int totalWeight;
@@ -18,9 +18,9 @@ class WooCart {
     currency = json['currency'];
     itemCount = json['item_count'];
     if (json['items'] != null) {
-      items = new List<WooCartItems>();
+      items = new List<WooCartItem>();
       json['items'].forEach((v) {
-        items.add(new WooCartItems.fromJson(v));
+        items.add(new WooCartItem.fromJson(v));
       });
     }
     needsShipping = json['needs_shipping'];
@@ -43,21 +43,61 @@ class WooCart {
 
   @override
   toString() => this.toJson().toString();
+} */
+
+class WooCart {
+  List coupons;
+  List shippingRates;
+  Map shippingAddress;
+  List<WooCartItem> items;
+  int itemsCount;
+  int itemsWeight;
+  bool needsPayment;
+  bool needsShipping;
+  Map totals;
+  List errors;
+
+  WooCart({
+    this.coupons,
+    this.shippingRates,
+    this.shippingAddress,
+    this.items,
+    this.itemsCount,
+    this.itemsWeight,
+    this.needsPayment,
+    this.needsShipping,
+    this.totals,
+    this.errors,
+  });
+
+  WooCart.fromJson(Map<String, dynamic> json) {
+    coupons = json['coupons'];
+    shippingRates = json['shipping_rates'];
+    shippingAddress = json['shipping_address'];
+    items =
+        List.from(json['items']).map((e) => WooCartItem.fromJson(e)).toList();
+    itemsCount = json['items_count'];
+    itemsWeight = json['items_weight'];
+    needsPayment = json['needs_payment'];
+    needsShipping = json['needs_shipping'];
+    totals = json['totals'];
+    errors = json['errors'];
+  }
 }
 
-class WooCartItems {
+class WooCartItem {
   String key;
   int id;
   int quantity;
   String name;
   String sku;
   String permalink;
-  List<WooCartImages> images;
+  List<WooCartImage> images;
   String price;
   String linePrice;
   List<String> variation;
 
-  WooCartItems(
+  WooCartItem(
       {this.key,
       this.id,
       this.quantity,
@@ -69,7 +109,7 @@ class WooCartItems {
       this.linePrice,
       this.variation});
 
-  WooCartItems.fromJson(Map<String, dynamic> json) {
+  WooCartItem.fromJson(Map<String, dynamic> json) {
     key = json['key'];
     id = json['id'];
     quantity = json['quantity'];
@@ -77,9 +117,9 @@ class WooCartItems {
     sku = json['sku'];
     permalink = json['permalink'];
     if (json['images'] != null) {
-      images = new List<WooCartImages>();
+      images = new List<WooCartImage>();
       json['images'].forEach((v) {
-        images.add(new WooCartImages.fromJson(v));
+        images.add(new WooCartImage.fromJson(v));
       });
     }
     price = json['price'];
@@ -103,9 +143,12 @@ class WooCartItems {
     data['variation'] = this.variation;
     return data;
   }
+
+  @override
+  toString() => this.toJson().toString();
 }
 
-class WooCartImages {
+class WooCartImage {
   String id;
   String src;
   String thumbnail;
@@ -114,7 +157,7 @@ class WooCartImages {
   String name;
   String alt;
 
-  WooCartImages(
+  WooCartImage(
       {this.id,
       this.src,
       this.thumbnail,
@@ -123,7 +166,7 @@ class WooCartImages {
       this.name,
       this.alt});
 
-  WooCartImages.fromJson(Map<String, dynamic> json) {
+  WooCartImage.fromJson(Map<String, dynamic> json) {
     id = json['id'].toString();
     src = json['src'];
     thumbnail = json['thumbnail'];

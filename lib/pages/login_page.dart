@@ -231,9 +231,13 @@ class _LoginPageState extends State<LoginPage> {
           }, fullWidth: true),
           Divider(height: 50),
           FormHelper.button("Devam Et", () {
-            Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) => TabsLayout()),
-            );
+            loadingOpen(context);
+            CustomApiService.createNonce().then((value) {
+              loadingHide(context);
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => TabsLayout()),
+              );
+            });
           }, color: Colors.grey, borderColor: Colors.grey),
         ],
       );

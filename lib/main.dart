@@ -1,5 +1,4 @@
 import 'package:ecommerceapp/constants.dart';
-import 'package:ecommerceapp/services/custom_api_service.dart';
 import 'package:ecommerceapp/services/inherited_container.dart';
 import 'package:ecommerceapp/pages/login_page.dart';
 import 'package:ecommerceapp/pages/splashscreen_page.dart';
@@ -57,10 +56,8 @@ class _TabsContainerState extends State<TabsContainer> {
           });
         });
       } else {
-        CustomApiService.createNonce().then((value) {
-          setState(() {
-            _statsAuth = STATS_AUTH.logout;
-          });
+        setState(() {
+          _statsAuth = STATS_AUTH.logout;
         });
       }
     });

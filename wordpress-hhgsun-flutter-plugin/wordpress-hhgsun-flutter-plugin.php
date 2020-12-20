@@ -11,20 +11,28 @@ Author: HHGsun
 Author URI: https://hhgsun.wordpress.com/
 License: GPLv2 or later
 Text Domain: hhgsun
+
+WC requires at least: 4.8.0
+WC tested up to: 4.8.0
+
 */
 
 // {domain}/wp-json/hhgsun/v1/author/1
 
 // https://github.com/woocommerce/woocommerce-gutenberg-products-block/blob/a404e5b24814240f15e50aa4f983b787bb9b36f1/src/StoreApi/docs/nonce-tokens.md
-// add_filter( 'woocommerce_store_api_disable_nonce_check', '__return_true' );
 
+//add_filter( 'woocommerce_store_api_disable_nonce_check', '__return_true' );
+
+if ( ! defined( 'ABSPATH' ) ) {
+  exit; // Exit if accessed directly
+}
 
 $custom_restapi_requests = array(
   new RequestRestApiModel(
-    "/get-nonce", "GET",
-    "kullaniciya sepet için nonce key döner",
+    "/create-store-nonce", "GET",
+    'kullaniciya sepet için nonce key döner (return: "b76....350")',
     function($req) {
-      return wp_create_nonce( 'wc_store_api' );
+      return wp_create_nonce( 'X-CoCart-API' ); // wp_create_nonce( 'wc_store_api' );
     },
   ),
   new RequestRestApiModel(
@@ -83,7 +91,7 @@ $custom_restapi_requests = array(
       return array('success' => true, 'data' => 'ürün favorilerinize eklendi');
     },
   ),
-
+  //
   new RequestRestApiModel(
     "/lost/password", "POST",
     "email adresine şifre yenileme linki gönderir (request: ?email=name@mail.com) (return: boolean)",
@@ -111,14 +119,6 @@ $custom_restapi_requests = array(
       return array('success' => true, 'data' => $data);
     },
   ), */
-  new RequestRestApiModel(
-    "/favorites", "GET",
-    "Favorilere eklenen ürünleri geri döner",
-    function($req) {
-      $data = array( 'kullanıcıya ait favori ilanlar', $req['user_id'] );
-      return array('success' => true, 'data' => $data);
-    },
-  ),
 );
 
 class RequestRestApiModel {
@@ -284,7 +284,7 @@ class SupportRestApiForFlutter {
         }
 
         if($this->disabledPluginsCount > 0) {
-          die("<p><strong>Lütfen yukarıdaki eklentileri menüdeki eklentiler bölümünden isimlerini aratıp kurun ve aktif edin</strong></p></div>");
+          echo "<p><strong>Lütfen yukarıdaki eklentileri menüdeki eklentiler bölümünden isimlerini aratıp kurun ve aktif edin</strong></p>";
         }
       ?>
 

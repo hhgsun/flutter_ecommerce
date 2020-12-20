@@ -1,4 +1,5 @@
 import 'package:ecommerceapp/constants.dart';
+import 'package:ecommerceapp/models/customer.dart';
 import 'package:ecommerceapp/pages/account_page.dart';
 import 'package:ecommerceapp/pages/cart_page.dart';
 import 'package:ecommerceapp/pages/categories_page.dart';
@@ -56,6 +57,7 @@ class _TabsLayoutState extends State<TabsLayout> {
                   icon: Icon(Icons.logout),
                   onPressed: () {
                     woocommerce.logUserOut();
+                    loggedInCustomer = new WooCustomer();
                     Navigator.of(context).pushReplacement(
                       MaterialPageRoute(builder: (context) => LoginPage()),
                     );

@@ -1,6 +1,5 @@
-import 'package:ecommerceapp/constants.dart';
+import 'package:ecommerceapp/models/cocart_item.dart';
 import 'package:ecommerceapp/services/custom_api_service.dart';
-import 'package:ecommerceapp/models/cart.dart';
 import 'package:flutter/material.dart';
 
 class CartPage extends StatefulWidget {
@@ -9,16 +8,13 @@ class CartPage extends StatefulWidget {
 }
 
 class _CartPageState extends State<CartPage> {
-  WooCart cart = new WooCart();
+  List<CoCartItem> itemList;
 
   void getCart() {
-    CustomApiService.getCart().then((res) {
-      print(res.data);
-      if (res.data != null) {
-        if (res.data.length > 0) {
-          //
-        }
-      }
+    CustomApiService.getCart().then((value) {
+      setState(() {
+        itemList = value.data;
+      });
     });
   }
 
@@ -30,14 +26,26 @@ class _CartPageState extends State<CartPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
+    return SingleChildScrollView(
       child: Column(
         children: [
           Column(
-            children: cart.items != null
-                ? cart.items.map((e) {
-                    print(e.name + " " + e.quantity.toString());
-                    return Text(e.name);
+            children: itemList != null
+                ? itemList.map((p) {
+                    return ListTile(
+                      title: Text(p.productName),
+                      subtitle:
+                          Text(p.quantity.toString() + ' x ' + p.productPrice),
+                      trailing: IconButton(
+                        icon: Icon(Icons.clear),
+                        onPressed: () {
+                          CustomApiService.deleteCart(p.key).then((value) {
+                            print(value.data);
+                            this.getCart();
+                          });
+                        },
+                      ),
+                    );
                   }).toList()
                 : [],
           ),
@@ -59,7 +67,11 @@ class _CartPageState extends State<CartPage> {
           MaterialButton(
             child: Text("ekle sepet"),
             onPressed: () {
-              CustomApiService.addCart("22", "2");
+              CustomApiService.addCart("16", "2").then((value) {
+                setState(() {
+                  itemList = value.data;
+                });
+              });
             },
           ),
           Divider(height: 50),
@@ -72,26 +84,9 @@ class _CartPageState extends State<CartPage> {
           MaterialButton(
             child: Text("OrderPayload Create Test"),
             onPressed: () async {
-              woocommerce.getMyCart().then((value) {
+              CustomApiService.getCart().then((value) {
                 print(value);
               });
-
-              
-
-              /* WooOrderPayload p =
-                  new WooOrderPayload(customerId: 9, setPaid: true);
-              p.customerNote = "Deneme HHGsun";
-              //p.currency = "50.00";
-              p.status = "pending";
-              List<LineItems> list = new List<LineItems>();
-              list.add(new LineItems(
-                productId: 12,
-                quantity: 3,
-              ));
-              p.lineItems = list;
-              woocommerce.createOrder(p).then((value) {
-                print(value);
-              }); */
             },
           ),
         ],

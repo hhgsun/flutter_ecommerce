@@ -1,18 +1,21 @@
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LocalDatabaseService {
-  final securityToken = new FlutterSecureStorage();
+  Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
 
   updateSecurityToken(String token) async {
-    await securityToken.write(key: 'token', value: token);
+    final SharedPreferences prefs = await _prefs;
+    await prefs.setString("token", token);
   }
 
   deleteSecurityToken() async {
-    await securityToken.delete(key: 'token');
+    final SharedPreferences prefs = await _prefs;
+    prefs.remove('token');
   }
 
   Future<String> getSecurityToken() async {
-    String token = await securityToken.read(key: 'token');
+    final SharedPreferences prefs = await _prefs;
+    String token = prefs.getString('token');
     if (token == null) {
       token = '0';
     }

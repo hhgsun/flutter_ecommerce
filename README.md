@@ -23,7 +23,8 @@ Wordpress:
 1. JWT için eklentiyi kur: https://wordpress.org/plugins/jwt-authentication-for-wp-rest-api/
   - wp-config.php dosyasına
   define('JWT_AUTH_SECRET_KEY', 'your-top-secrect-key'); //HHGSUN
-  yukardaki kodu ekleyin define(NONCE_SALT..) alanından sonra eklenebilir.
+  bu kodu ekleyin, define(NONCE_SALT..) alanından sonra eklenebilir.
+
 2. WooCommerce eklentisini kur
   ## WooCommerce Ayarlar -> Hesaplar ve Gizlilik
   - Misafir ödemesi -> hiçbiri işaretli olmamalı
@@ -33,7 +34,7 @@ Wordpress:
 3. WooCommerce consumerKey ve consumerSecret keylerini oluşturup constants.dart dosyasında ilgili alanlara ekle
 
 Android:
-1. woocommerce eklentisi için app/build.gradle minSdkVersion 18 olmalı
+1. flutter_secure_storage eklentisi için app/build.gradle minSdkVersion 18 olmalı
 
 Ios:
 1. 

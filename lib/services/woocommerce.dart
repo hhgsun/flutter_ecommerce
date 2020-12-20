@@ -31,19 +31,15 @@ import 'package:ecommerceapp/models/shipping_zone_method.dart';
 import 'package:ecommerceapp/models/tax_classes.dart';
 import 'package:ecommerceapp/models/tax_rate.dart';
 import 'package:ecommerceapp/models/user.dart';
+import 'package:ecommerceapp/services/custom_api_service.dart';
 import 'package:ecommerceapp/utils/local_db.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:crypto/crypto.dart' as crypto;
 
-import '../models/cart_item.dart';
 import 'woocommerce_error.dart';
 import '../models/cart.dart';
 //import 'models/shipping_zone_method.dart';
-
-export '../models/cart_item.dart' show WooCartItem;
-export 'woocommerce_error.dart' show WooCommerceError;
-export '../models/cart.dart' show WooCart;
 
 /// Create a new Instance of [WooCommerce] and pass in the necessary parameters into the constructor.
 ///
@@ -108,8 +104,14 @@ class WooCommerce {
   String get apiResourceUrl => queryUri.toString();
 
   // Header to be sent for JWT authourization
-  Map<String, String> _urlHeader = {'Authorization': ''};
-  String get urlHeader => _urlHeader['Authorization'] = 'Bearer ' + authToken;
+  Map<String, String> _urlHeader = {
+    'Authorization': '',
+    'X-WC-Store-API-Nonce': CustomApiService.nonceStore
+  };
+
+  // String get urlHeader => _urlHeader['Authorization'] = 'Bearer ' + authToken;
+  setUrlHeaderNonce(String val) => _urlHeader['X-WC-Store-API-Nonce'] = val;
+
   LocalDatabaseService _localDbService = LocalDatabaseService();
 
   /// Authenticates the user using WordPress JWT authentication and returns the access [_token] string.
@@ -950,7 +952,7 @@ class WooCommerce {
   /// Related endpoint : wc/store/cart
   ///
 
-  Future<WooCartItem> addToMyCart(
+  Future<WooCart> addToMyCart(
       {@required String itemId,
       @required String quantity,
       List<WooProductVariation> variations}) async {
@@ -960,9 +962,14 @@ class WooCommerce {
     };
     if (variations != null) data['variations'] = variations;
     await getAuthTokenFromDb();
-    _urlHeader['Authorization'] = 'Bearer ' + _authToken;
+    if (_authToken == '0')
+      _urlHeader['Authorization'] = '';
+    else
+      _urlHeader['Authorization'] = 'Bearer ' + _authToken;
+
     final response = await http.post(
-        this.baseUrl + URL_STORE_API_PATH + 'cart/items',
+        // this.baseUrl + URL_STORE_API_PATH + 'cart/items',
+        this.baseUrl + URL_STORE_API_PATH + 'cart/add-item',
         headers: _urlHeader,
         body: data);
 
@@ -970,7 +977,7 @@ class WooCommerce {
       final jsonStr = json.decode(response.body);
 
       _printToLog('added to my cart : ' + jsonStr.toString());
-      return WooCartItem.fromJson(jsonStr);
+      return WooCart.fromJson(jsonStr);
     } else {
       WooCommerceError err =
           WooCommerceError.fromJson(json.decode(response.body));
@@ -1013,15 +1020,18 @@ class WooCommerce {
 
   Future<WooCart> getMyCart() async {
     await getAuthTokenFromDb();
-    _urlHeader['Authorization'] = 'Bearer ' + _authToken;
-    WooCart cart;
+    if (_authToken == '0')
+      _urlHeader['Authorization'] = '';
+    else
+      _urlHeader['Authorization'] = 'Bearer ' + _authToken;
+
     final response = await http.get(this.baseUrl + URL_STORE_API_PATH + 'cart',
         headers: _urlHeader);
+
     _printToLog('response gotten : ' + response.toString());
     if (response.statusCode >= 200 && response.statusCode < 300) {
       final jsonStr = json.decode(response.body);
-      cart = WooCart.fromJson(jsonStr);
-      return cart;
+      return WooCart.fromJson(jsonStr);
     } else {
       _printToLog(' error : ' + response.body);
       WooCommerceError err =
