@@ -24,30 +24,54 @@ class _CategoriesPageState extends State<CategoriesPage> {
   @override
   Widget build(BuildContext context) {
     if (categories.length > 0) {
-      return SingleChildScrollView(
-        child: Column(
-          children: categories
-              .map((cat) => ListTile(
-                    /* leading: cat.image?.src != null
-                        ? Image(image: NetworkImage(cat.image?.src))
-                        : Text("YOK"), */
-                    title: Text(cat.name),
-                    trailing: Text(cat.count.toString()),
-                    onTap: () {
-                      /* showDialogCustom(context,
-                          title: cat.name, subTitle: cat.menuOrder.toString()); */
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => ProductListPage(
-                            title: cat.name,
-                            catId: cat.id.toString(),
+      return GridView.count(
+        crossAxisCount: 2,
+        children: categories
+            .map(
+              (c) => InkWell(
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => ProductListPage(
+                        title: c.name,
+                        catId: c.id.toString(),
+                      ),
+                    ),
+                  );
+                },
+                child: Container(
+                  alignment: Alignment.center,
+                  height: MediaQuery.of(context).size.width / 2,
+                  margin: EdgeInsets.all(5.0),
+                  child: Text(
+                    c.name,
+                    overflow: TextOverflow.clip,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        fontSize:
+                            Theme.of(context).textTheme.headline5.fontSize,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w900,
+                        shadows: [
+                          Shadow(
+                            offset: Offset(0.5, 1.0),
+                            blurRadius: 3.0,
+                            color: Colors.black,
                           ),
-                        ),
-                      );
-                    },
-                  ))
-              .toList(),
-        ),
+                        ]),
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.red,
+                    image: c.image != null
+                        ? DecorationImage(
+                            image: NetworkImage(c.image.src),
+                          )
+                        : null,
+                  ),
+                ),
+              ),
+            )
+            .toList(),
       );
     } else {
       return Center(

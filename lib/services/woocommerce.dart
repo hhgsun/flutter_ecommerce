@@ -1189,7 +1189,7 @@ class WooCommerce {
       'parent': parent,
       'parent_exclude': parentExclude,
       'status': status,
-      'customer': customer,
+      'customer_id': customer,
       'product': product,
       'dp': dp,
     }).forEach((k, v) {

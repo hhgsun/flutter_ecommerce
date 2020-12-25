@@ -21,11 +21,20 @@ class CustomTabPage {
 
 class _TabsLayoutState extends State<TabsLayout> {
   int selectedPageIndex = 0;
+  double tabIconSize = 30.0;
+  double tabFontSize = 13.0;
 
   CustomTabPage tabViews(context, int index) => [
         CustomTabPage(
           head: AppBar(
-            title: Text(getText("tab_home")),
+            title: Container(
+              height: 40,
+              padding: EdgeInsets.only(bottom: 5),
+              child: Image(
+                image: AssetImage('assets/images/logo.png'),
+                fit: BoxFit.contain,
+              ),
+            ),
             centerTitle: true,
           ),
           body: HomePage(),
@@ -75,18 +84,24 @@ class _TabsLayoutState extends State<TabsLayout> {
       child: Scaffold(
         appBar: tabViews(context, selectedPageIndex).head,
         body: tabViews(context, selectedPageIndex).body,
-        bottomNavigationBar: Material(
-          color: Colors.grey[100],
+        bottomNavigationBar: Container(
+          decoration: BoxDecoration(
+            boxShadow: [BoxShadow(blurRadius: 1, color: Colors.black12)],
+            color: Colors.white,
+          ),
+          padding: EdgeInsets.only(left: 2.0, right: 2.0),
           child: TabBar(
             labelPadding: EdgeInsets.all(1),
             indicatorPadding: EdgeInsets.all(0),
-            unselectedLabelColor: Colors.redAccent,
             indicatorSize: TabBarIndicatorSize.tab,
+            unselectedLabelColor: colorLightDart,
             indicator: BoxDecoration(
-              gradient: LinearGradient(
-                  colors: [Colors.redAccent, Colors.orangeAccent]),
-              /* borderRadius: BorderRadius.circular(10), */
-              color: Colors.redAccent,
+              gradient: LinearGradient(colors: [colorSecondary, colorPrimary]),
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(10.0),
+                topRight: Radius.circular(10.0),
+              ),
+              color: colorSecondary,
             ),
             onTap: (int index) {
               setState(() {
@@ -95,25 +110,45 @@ class _TabsLayoutState extends State<TabsLayout> {
             },
             tabs: [
               Tab(
-                  icon: Icon(Icons.home_filled),
-                  iconMargin: EdgeInsets.only(bottom: 5),
-                  child: Text(getText("tab_home"))),
+                icon: Icon(Icons.home_filled, size: tabIconSize),
+                iconMargin: EdgeInsets.only(bottom: 5),
+                child: Text(
+                  getText("tab_home"),
+                  style: TextStyle(fontSize: tabFontSize),
+                ),
+              ),
               Tab(
-                  icon: Icon(Icons.category_rounded),
-                  iconMargin: EdgeInsets.only(bottom: 5),
-                  child: Text(getText("tab_cats"))),
+                icon: Icon(Icons.category_rounded, size: tabIconSize),
+                iconMargin: EdgeInsets.only(bottom: 5),
+                child: Text(
+                  getText("tab_cats"),
+                  style: TextStyle(fontSize: tabFontSize),
+                ),
+              ),
               Tab(
-                  icon: Icon(Icons.star_rate_rounded),
-                  iconMargin: EdgeInsets.only(bottom: 5),
-                  child: Text(getText("tab_favs"))),
+                icon: Icon(Icons.star_rate_rounded, size: tabIconSize),
+                iconMargin: EdgeInsets.only(bottom: 5),
+                child: Text(
+                  getText("tab_favs"),
+                  style: TextStyle(fontSize: tabFontSize),
+                ),
+              ),
               Tab(
-                  icon: Icon(Icons.shopping_basket_rounded),
-                  iconMargin: EdgeInsets.only(bottom: 5),
-                  child: Text(getText("tab_cart"))),
+                icon: Icon(Icons.shopping_basket_rounded, size: tabIconSize),
+                iconMargin: EdgeInsets.only(bottom: 5),
+                child: Text(
+                  getText("tab_cart"),
+                  style: TextStyle(fontSize: tabFontSize),
+                ),
+              ),
               Tab(
-                  icon: Icon(Icons.person),
-                  iconMargin: EdgeInsets.only(bottom: 5),
-                  child: Text(getText("tab_account"))),
+                icon: Icon(Icons.person, size: tabIconSize),
+                iconMargin: EdgeInsets.only(bottom: 5),
+                child: Text(
+                  getText("tab_account"),
+                  style: TextStyle(fontSize: tabFontSize),
+                ),
+              ),
             ],
           ),
         ),

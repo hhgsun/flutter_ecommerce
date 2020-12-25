@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:ecommerceapp/models/cocart_item.dart';
-import 'package:ecommerceapp/models/customer.dart';
 import 'package:http/http.dart' as http;
 import 'package:ecommerceapp/constants.dart';
 
@@ -87,6 +86,14 @@ class CustomApiService {
     });
   }
 
+  static Future<CustomResponseData<CoCartTotals>> totalsCart() {
+    return _request("/totals?cart_key=" + cartKey + "&html=true",
+            nameSpace: _wpWooNameSpace, type: REQUEST_TYPE.GET)
+        .then((value) {
+      return new CustomResponseData(true, CoCartTotals.fromJson(value));
+    });
+  }
+
   // LOST PASSWORD
 
   static Future<CustomResponseData> lostPassword(String email) async {
@@ -100,6 +107,11 @@ class CustomApiService {
     return CustomApiService._request("/user/favorites/add", data: {
       "userid": loggedInCustomer.id.toString(),
       "productid": productid
+    }).then((res) {
+      if (res['success']) {
+        favoriteProducts.add(productid);
+      }
+      return res;
     }).then((json) => CustomResponseData.fromJson(json));
   }
 
@@ -107,17 +119,36 @@ class CustomApiService {
     return CustomApiService._request("/user/favorites/delete", data: {
       "userid": loggedInCustomer.id.toString(),
       "productid": productid
+    }).then((res) {
+      if (res['success']) {
+        favoriteProducts.remove(productid.toString());
+      }
+      return res;
     }).then((json) => CustomResponseData.fromJson(json));
   }
 
-  static FutureOr<WooCustomerMetaData> getFavs() {
+  static void loadFavs() {
     if (loggedInCustomer != null) {
       List meta = loggedInCustomer.metaData
           .where((meta) => meta.key == 'favorite_products')
           .toList();
-      if (meta.isNotEmpty) return meta.first;
+      if (meta.isNotEmpty) {
+        favoriteProducts = new List<String>();
+        print(meta.first.value);
+        var values = meta.first.value;
+        if (values.length > 0 && values != null) {
+          var entries = Map.from(values).entries;
+          if (values.entries.length > 0)
+            entries.forEach((e) {
+              favoriteProducts.add(e.value);
+            });
+        }
+      }
     }
-    return null;
+  }
+
+  static bool isFav(String productid) {
+    return favoriteProducts.contains(productid);
   }
 
   // GENERAL DATA

@@ -1,5 +1,5 @@
 import 'package:ecommerceapp/constants.dart';
-import 'package:ecommerceapp/services/inherited_container.dart';
+import 'package:ecommerceapp/services/custom_api_service.dart';
 import 'package:ecommerceapp/pages/login_page.dart';
 import 'package:ecommerceapp/pages/splashscreen_page.dart';
 import 'package:ecommerceapp/widgets/tabs_layout.dart';
@@ -15,12 +15,10 @@ class ECommerce extends StatelessWidget {
     return MaterialApp(
       title: appName,
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: colorPrimary,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: BaseContainer(
-        child: TabsContainer(),
-      ),
+      home: TabsContainer(),
       debugShowCheckedModeBanner: false,
     );
   }
@@ -49,7 +47,7 @@ class _TabsContainerState extends State<TabsContainer> {
           print("LOGGED IN USER ID: " + userid.toString());
           woocommerce.getCustomerById(id: userid).then((customer) {
             loggedInCustomer = customer;
-            BaseContainer.of(context).data.fetchFromUserFavs();
+            CustomApiService.loadFavs();
             setState(() {
               _statsAuth = STATS_AUTH.login;
             });

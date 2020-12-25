@@ -20,12 +20,14 @@ samples, guidance on mobile development, and a full API reference.
 ##### ##### ##### ##### ##### ##### ##### ##### ##### ##### ##### ##### ##### ##### ##### ##### ###
 
 Wordpress:
-1. JWT için eklentiyi kur: https://wordpress.org/plugins/jwt-authentication-for-wp-rest-api/
+1. wordpress-hhgsun-flutter-plugin eklentisini kurun
+
+2. JWT için eklentiyi kur: https://wordpress.org/plugins/jwt-authentication-for-wp-rest-api/
   - wp-config.php dosyasına
   define('JWT_AUTH_SECRET_KEY', 'your-top-secrect-key'); //HHGSUN
   bu kodu ekleyin, define(NONCE_SALT..) alanından sonra eklenebilir.
 
-2. WooCommerce eklentisini kur
+3. WooCommerce eklentisini kur
   ## WooCommerce Ayarlar -> Hesaplar ve Gizlilik
   - Misafir ödemesi -> hiçbiri işaretli olmamalı
   - Hesap oluşturma bölümünde bu alanlar işaretlenmeli

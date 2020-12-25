@@ -12,15 +12,17 @@ const String appName = "ECommerce App";
 // woocommerce and wordpress
 WooCommerce woocommerce = WooCommerce(
   baseUrl: "https://canliozelders.com",
-  consumerKey: "ck_d4f5a2fccc633d525b268a0c6ba73fa805dea1d5",
-  consumerSecret: "cs_e3fe59f51fd0f1a389e143bfc85d37662856018a",
+  consumerKey: "ck_23c920eb0baee6301506cf2d1210f15d8bf4a0d9",
+  consumerSecret: "cs_4f83916c422e9088de8f11468cac7a95749e2981",
   isDebug: true,
 );
 // colors
-const Color colorPrimary = Color.fromRGBO(63, 54, 164, 1);
-const Color colorSecondary = Color.fromRGBO(65, 224, 235, 1);
+const Color colorPrimary = Colors.red;
+const Color colorSecondary = Colors.redAccent;
 const Color colorDark = Colors.black87;
+const Color colorLightDart = Colors.black54;
 const Color colorwhite = Colors.white;
+const Color colorFocus = Colors.indigoAccent;
 
 // ---- CUSTOM SETTINGS ////////////////////////
 ////////////////////////////////////////////////
@@ -56,7 +58,7 @@ String getText(String key) {
 // CURRENT USER
 WooCustomer loggedInCustomer;
 List<WooProductCategory> categories = [];
-
+List<String> favoriteProducts = new List<String>();
 
 // CUSTOM
 // const String lostPassUrlForWebView = "/hesabim/lost-password/";

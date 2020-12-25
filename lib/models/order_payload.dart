@@ -12,7 +12,7 @@ class WooOrderPayload {
   List<WooOrderPayloadCouponLines> couponLines;
   WooOrderPayloadBilling billing;
   WooOrderPayloadShipping shipping;
-  List<LineItems> lineItems;
+  List<LineItem> lineItems;
   List<ShippingLines> shippingLines;
 
   WooOrderPayload(
@@ -66,9 +66,9 @@ class WooOrderPayload {
         ? new WooOrderPayloadShipping.fromJson(json['shipping'])
         : null;
     if (json['line_items'] != null) {
-      lineItems = new List<LineItems>();
+      lineItems = new List<LineItem>();
       json['line_items'].forEach((v) {
-        lineItems.add(new LineItems.fromJson(v));
+        lineItems.add(new LineItem.fromJson(v));
       });
     }
     if (json['shipping_lines'] != null) {
@@ -301,7 +301,7 @@ class WooOrderPayloadShipping {
   }
 }
 
-class LineItems {
+class LineItem {
   int productId;
   String name;
   int variationId;
@@ -310,7 +310,7 @@ class LineItems {
   String total;
   int quantity;
 
-  LineItems(
+  LineItem(
       {this.productId,
       this.name,
       this.variationId,
@@ -319,7 +319,7 @@ class LineItems {
       this.total,
       this.quantity});
 
-  LineItems.fromJson(Map<String, dynamic> json) {
+  LineItem.fromJson(Map<String, dynamic> json) {
     productId = json['product_id'];
     name = json['name'];
     variationId = json['variation_id'];

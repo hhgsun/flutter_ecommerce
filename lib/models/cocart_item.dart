@@ -57,3 +57,57 @@ class CoCartItem {
   /* @override
   toString() => this.toJson().toString(); */
 }
+
+class CoCartTotals {
+  String subtotal;
+  String subtotalTax;
+  String shippingTotal;
+  String shippingTax;
+  List shippingTaxes;
+  String discountTotal;
+  String discountTax;
+  String cartContentsTotal;
+  String cartContentsTax;
+  List cartContentsTaxes;
+  String feeTotal;
+  String feeTax;
+  List feeTaxes;
+  String total;
+  String totalTax;
+
+  CoCartTotals({
+    this.subtotal,
+    this.subtotalTax,
+    this.shippingTotal,
+    this.shippingTax,
+    this.shippingTaxes,
+    this.discountTotal,
+    this.discountTax,
+    this.cartContentsTaxes,
+    this.cartContentsTax,
+    this.cartContentsTotal,
+    this.feeTax,
+    this.feeTaxes,
+    this.feeTotal,
+    this.total,
+    this.totalTax,
+  });
+
+  factory CoCartTotals.fromJson(Map json) => CoCartTotals(
+    shippingTax: json['shipping_tax'],
+    shippingTaxes: json['shipping_taxes'],
+    total: json['total'],
+    totalTax: json['total_tax'],
+    discountTax: json['discount_tax'],
+    discountTotal: json['discount_total'],
+    cartContentsTax: json['cart_contents_tax'],
+    cartContentsTotal: json['cart_contents_total'],
+    cartContentsTaxes: json['cart_contents_taxes'],
+    feeTax: json['fee_tax'],
+    feeTaxes: json['fee_taxes'],
+    feeTotal: json['fee_total'],
+    shippingTotal: json['shipping_total'],
+    subtotal: json['subtotal'],
+    subtotalTax: json['subtotal_tax'],
+  );
+}

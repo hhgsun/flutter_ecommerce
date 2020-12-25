@@ -1,4 +1,7 @@
+import 'package:ecommerceapp/constants.dart';
 import 'package:ecommerceapp/models/cocart_item.dart';
+import 'package:ecommerceapp/models/order_payload.dart';
+import 'package:ecommerceapp/models/payment_gateway.dart';
 import 'package:ecommerceapp/services/custom_api_service.dart';
 import 'package:flutter/material.dart';
 
@@ -8,12 +11,24 @@ class CartPage extends StatefulWidget {
 }
 
 class _CartPageState extends State<CartPage> {
-  List<CoCartItem> itemList;
+  List<CoCartItem> _itemList;
+  CoCartTotals _totals;
+  int lastOrderId;
 
   void getCart() {
     CustomApiService.getCart().then((value) {
       setState(() {
-        itemList = value.data;
+        _itemList = value.data;
+      });
+      this.getTotals();
+    });
+  }
+
+  void getTotals() {
+    CustomApiService.totalsCart().then((value) {
+      print(value.data);
+      setState(() {
+        _totals = value.data;
       });
     });
   }
@@ -30,9 +45,10 @@ class _CartPageState extends State<CartPage> {
       child: Column(
         children: [
           Column(
-            children: itemList != null
-                ? itemList.map((p) {
+            children: _itemList != null
+                ? _itemList.map((p) {
                     return ListTile(
+                      leading: Image.network(p.productImage),
                       title: Text(p.productName),
                       subtitle:
                           Text(p.quantity.toString() + ' x ' + p.productPrice),
@@ -42,6 +58,7 @@ class _CartPageState extends State<CartPage> {
                           CustomApiService.deleteCart(p.key).then((value) {
                             print(value.data);
                             this.getCart();
+                            this.getTotals();
                           });
                         },
                       ),
@@ -49,6 +66,11 @@ class _CartPageState extends State<CartPage> {
                   }).toList()
                 : [],
           ),
+          ListTile(
+            title: Text("TOPLAM"),
+            subtitle: Text(_totals != null ? _totals.total : ''),
+          ),
+          Divider(),
           MaterialButton(
             child: Text("GET NONCE"),
             onPressed: () {
@@ -57,34 +79,34 @@ class _CartPageState extends State<CartPage> {
               });
             },
           ),
-          MaterialButton(
-            child: Text("SEPETİM GÖSTER"),
-            onPressed: () {
-              this.getCart();
-            },
-          ),
           Divider(height: 50),
           MaterialButton(
-            child: Text("ekle sepet"),
-            onPressed: () {
-              CustomApiService.addCart("16", "2").then((value) {
-                setState(() {
-                  itemList = value.data;
-                });
+            child: Text("OrderPayload Create Test"),
+            onPressed: () async {
+              List<LineItem> lineItems = new List<LineItem>();
+              _itemList.forEach((i) {
+                lineItems.add(new LineItem(
+                  productId: i.productId,
+                  quantity: i.quantity,
+                ));
+              });
+              WooOrderPayload wooOrderPayload = new WooOrderPayload(
+                lineItems: lineItems,
+              );
+              woocommerce.createOrder(wooOrderPayload).then((value) {
+                lastOrderId = value.id;
+                print(value.toString());
               });
             },
           ),
           Divider(height: 50),
           MaterialButton(
-              child: Text("sil sepetten"),
-              onPressed: () {
-                CustomApiService.deleteCart("1f0e3dad99908345f7439f8ffabdffc4");
-              }),
-          Divider(height: 50),
-          MaterialButton(
-            child: Text("OrderPayload Create Test"),
+            child: Text("Onayla"),
             onPressed: () async {
-              CustomApiService.getCart().then((value) {
+              WooPaymentGateway paymentGateway = new WooPaymentGateway(
+                order: this.lastOrderId,
+              );
+              woocommerce.updatePaymentGateway(paymentGateway).then((value) {
                 print(value);
               });
             },
