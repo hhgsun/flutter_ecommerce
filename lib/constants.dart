@@ -29,11 +29,14 @@ const Color colorFocus = Colors.indigoAccent;
 
 // GENERATE WP USERNAME
 String generateUsernameByEmail(String email) {
-  String prefix = "u_";
+  String prefix = "";
   String endfix = "_" +
       DateTime.now().day.toString() +
       DateTime.now().month.toString() +
-      DateTime.now().year.toString();
+      DateTime.now().year.toString() +
+      '_' +
+      DateTime.now().hour.toString() +
+      DateTime.now().minute.toString();
   String ret = "";
   if (email.split('@').length > 0) {
     ret = email.split('@').first;

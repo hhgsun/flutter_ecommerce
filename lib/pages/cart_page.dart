@@ -2,7 +2,9 @@ import 'package:ecommerceapp/constants.dart';
 import 'package:ecommerceapp/models/cocart_item.dart';
 import 'package:ecommerceapp/models/order_payload.dart';
 import 'package:ecommerceapp/models/payment_gateway.dart';
+import 'package:ecommerceapp/pages/login_page.dart';
 import 'package:ecommerceapp/services/custom_api_service.dart';
+import 'package:ecommerceapp/utils/form_helper.dart';
 import 'package:flutter/material.dart';
 
 class CartPage extends StatefulWidget {
@@ -35,15 +37,31 @@ class _CartPageState extends State<CartPage> {
 
   @override
   void initState() {
-    this.getCart();
+    if (loggedInCustomer != null) {
+      this.getCart();
+    }
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    if (loggedInCustomer == null) {
+      return Center(
+        child: FormHelper.button("Giriş Yap", () {
+          Navigator.of(context).pop(
+            MaterialPageRoute(
+              builder: (context) => LoginPage(
+                title: 'Giriş Yap',
+              ),
+            ),
+          );
+        }),
+      );
+    }
     return SingleChildScrollView(
       child: Column(
         children: [
+          Text('HENÜZ HAZIR DEĞİL ÜZERİNDE ÇALIŞILIYOR'),
           Column(
             children: _itemList != null
                 ? _itemList.map((p) {

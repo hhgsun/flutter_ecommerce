@@ -1,3 +1,4 @@
+import 'package:ecommerceapp/constants.dart';
 import 'package:flutter/material.dart';
 // BUNU UYGULA
 // https://github.com/codegrue/card_settings
@@ -10,7 +11,7 @@ class FormHelper {
     String hintText,
     String helperText,
     bool isTextArea = false,
-    bool isNumberInput = false,
+    TextInputType inputType = TextInputType.text,
     obscureText: false,
     Function onValidate,
     Widget prefixIcon,
@@ -26,7 +27,7 @@ class FormHelper {
       ),
       obscureText: obscureText,
       maxLines: !isTextArea ? 1 : 3,
-      keyboardType: isNumberInput ? TextInputType.number : TextInputType.text,
+      keyboardType: inputType,
       onChanged: (String value) {
         return onChanged(value);
       },
@@ -72,6 +73,7 @@ class FormHelper {
       child: Text(
         labelName,
         textAlign: textAlign,
+        style: TextStyle(color: colorLightDart),
       ),
     );
   }
@@ -84,9 +86,9 @@ class FormHelper {
     bool fullWidth = false,
     double width = 200.0,
     double height = 50.0,
-    Color color = Colors.redAccent,
-    Color borderColor = Colors.redAccent,
-    Color textColor = Colors.white,
+    Color color = colorPrimary,
+    Color borderColor = colorPrimary,
+    Color textColor = colorwhite,
   }) {
     return Container(
       height: height,

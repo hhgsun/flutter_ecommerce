@@ -8,13 +8,16 @@ import 'package:ecommerceapp/widgets/tabs_layout.dart';
 import 'package:flutter/material.dart';
 
 class LoginPage extends StatefulWidget {
+  final String title;
+  const LoginPage({Key key, this.title}) : super(key: key);
   @override
   _LoginPageState createState() => _LoginPageState();
 }
 
 class _LoginPageState extends State<LoginPage> {
   WooCustomer _loginCustomer = new WooCustomer();
-  WooCustomer _registerCustomer = new WooCustomer();
+  WooCustomer _registerCustomer =
+      new WooCustomer(firstName: '', lastName: '', email: '', password: '');
 
   bool hiddentLoginPassText = true;
   bool hiddentRegisterPassText = true;
@@ -27,8 +30,8 @@ class _LoginPageState extends State<LoginPage> {
       length: 2,
       child: Scaffold(
         appBar: AppBar(
-          title:
-              Text("Hoşgeldin!", style: Theme.of(context).textTheme.headline4),
+          title: Text(widget.title != null ? widget.title : 'Hoşgeldiniz',
+              style: Theme.of(context).textTheme.headline4),
           toolbarHeight: 200,
           bottom: TabBar(tabs: [Tab(text: "Giriş Yap"), Tab(text: "Kayıt Ol")]),
         ),
@@ -75,6 +78,7 @@ class _LoginPageState extends State<LoginPage> {
             this._registerCustomer.email,
             (val) => this._registerCustomer.email = val,
             hintText: "E-Mail Adresiniz",
+            inputType: TextInputType.emailAddress,
           ),
           FormHelper.spacer(height: 10.0),
           FormHelper.label("Şifreniz"),
@@ -123,52 +127,64 @@ class _LoginPageState extends State<LoginPage> {
           ),
           Divider(height: 40),
           FormHelper.button("Kayıt Ol", () async {
-            if (_resPassword == _registerCustomer.password) {
-              loadingOpen(context);
-              try {
-                _registerCustomer.username =
-                    generateUsernameByEmail(_registerCustomer.email);
-                bool res = await woocommerce.createCustomer(_registerCustomer);
-                if (res) {
-                  this._loginCtrl(
-                    _registerCustomer.email,
-                    _registerCustomer.password,
-                  );
-                } else {
+            if (_registerCustomer.firstName.isEmpty ||
+                _registerCustomer.lastName.isEmpty ||
+                _registerCustomer.email.isEmpty ||
+                _registerCustomer.password.isEmpty) {
+              showDialogCustom(
+                context,
+                subTitle: 'Lütfen bilgilerinizi eksiksiz giriniz.',
+                failIcon: true,
+              );
+            } else {
+              if (_resPassword == _registerCustomer.password) {
+                loadingOpen(context);
+                try {
+                  _registerCustomer.username =
+                      generateUsernameByEmail(_registerCustomer.email);
+                  bool res =
+                      await woocommerce.createCustomer(_registerCustomer);
+                  if (res) {
+                    this._loginCtrl(
+                      _registerCustomer.email,
+                      _registerCustomer.password,
+                    );
+                  } else {
+                    loadingHide(context);
+                    showDialogCustom(
+                      context,
+                      subTitle: 'Kayıt olurken bir hata oluştu',
+                      failIcon: true,
+                    );
+                  }
+                } catch (e) {
                   loadingHide(context);
+                  String textShowMessage = "Beklenmedik Hata";
+                  if (e.message is String) {
+                    List<String> errs = e.message.toString().split('\n');
+                    if (errs.length > 2) {
+                      List<String> msgTexts = errs[2].split("message:");
+                      if (msgTexts.length > 1) {
+                        textShowMessage = msgTexts[1].trim();
+                      }
+                      textShowMessage = _removeHtmlTags(textShowMessage);
+                    }
+                  }
                   showDialogCustom(
                     context,
-                    subTitle: 'Kayıt olurken bir hata oluştu',
+                    subTitle: (textShowMessage is String)
+                        ? textShowMessage
+                        : 'Kayıt olurken bir hata oluştu',
                     failIcon: true,
                   );
                 }
-              } catch (e) {
-                loadingHide(context);
-                String textShowMessage = "Beklenmedik Hata";
-                if (e.message is String) {
-                  List<String> errs = e.message.toString().split('\n');
-                  if (errs.length > 2) {
-                    List<String> msgTexts = errs[2].split("message:");
-                    if (msgTexts.length > 1) {
-                      textShowMessage = msgTexts[1].trim();
-                    }
-                    textShowMessage = _removeHtmlTags(textShowMessage);
-                  }
-                }
+              } else {
                 showDialogCustom(
                   context,
-                  subTitle: (textShowMessage is String)
-                      ? textShowMessage
-                      : 'Kayıt olurken bir hata oluştu',
+                  subTitle: 'Lütfen Şifrenizi kontrol ediniz',
                   failIcon: true,
                 );
               }
-            } else {
-              showDialogCustom(
-                context,
-                subTitle: 'Lütfen Şifrenizi kontrol ediniz',
-                failIcon: true,
-              );
             }
           }, fullWidth: true),
         ],
@@ -182,6 +198,7 @@ class _LoginPageState extends State<LoginPage> {
             this._loginCustomer.email,
             (val) => this._loginCustomer.email = val,
             hintText: "E-Mail Adresinizi Girin",
+            inputType: TextInputType.emailAddress,
           ),
           FormHelper.spacer(),
           FormHelper.input(
@@ -292,12 +309,6 @@ class LostPassWebView extends StatefulWidget {
 class _LostPassWebViewState extends State<LostPassWebView> {
   String email;
 
-  /* @override
-  void initState() {
-    super.initState();
-    if (Platform.isAndroid) WebView.platform = SurfaceAndroidWebView();
-  } */
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -344,9 +355,6 @@ class _LostPassWebViewState extends State<LostPassWebView> {
           ],
         ),
       ),
-      /* WebView(
-        initialUrl: woocommerce.baseUrl + lostPassUrlForWebView,
-      ), */
     );
   }
 }

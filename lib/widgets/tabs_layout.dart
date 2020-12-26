@@ -1,11 +1,9 @@
 import 'package:ecommerceapp/constants.dart';
-import 'package:ecommerceapp/models/customer.dart';
 import 'package:ecommerceapp/pages/account_page.dart';
 import 'package:ecommerceapp/pages/cart_page.dart';
 import 'package:ecommerceapp/pages/categories_page.dart';
 import 'package:ecommerceapp/pages/favorites_page.dart';
 import 'package:ecommerceapp/pages/home_page.dart';
-import 'package:ecommerceapp/pages/login_page.dart';
 import 'package:flutter/material.dart';
 
 class TabsLayout extends StatefulWidget {
@@ -24,6 +22,13 @@ class _TabsLayoutState extends State<TabsLayout> {
   double tabIconSize = 30.0;
   double tabFontSize = 13.0;
 
+  var _shapeHeader = RoundedRectangleBorder(
+    borderRadius: BorderRadius.only(
+      bottomLeft: Radius.circular(10.0),
+      bottomRight: Radius.circular(10.0),
+    ),
+  );
+
   CustomTabPage tabViews(context, int index) => [
         CustomTabPage(
           head: AppBar(
@@ -36,24 +41,31 @@ class _TabsLayoutState extends State<TabsLayout> {
               ),
             ),
             centerTitle: true,
+            shape: _shapeHeader,
           ),
           body: HomePage(),
         ),
         CustomTabPage(
           head: AppBar(
             title: Text(getText("tab_cats")),
+            centerTitle: true,
+            shape: _shapeHeader,
           ),
           body: CategoriesPage(),
         ),
         CustomTabPage(
           head: AppBar(
             title: Text(getText("tab_favs")),
+            centerTitle: true,
+            shape: _shapeHeader,
           ),
           body: FavoritesPage(),
         ),
         CustomTabPage(
           head: AppBar(
             title: Text(getText("tab_cart")),
+            centerTitle: true,
+            shape: _shapeHeader,
           ),
           body: CartPage(),
         ),
@@ -61,17 +73,7 @@ class _TabsLayoutState extends State<TabsLayout> {
           head: AppBar(
             title: Text(getText("tab_account")),
             centerTitle: true,
-            actions: [
-              IconButton(
-                  icon: Icon(Icons.logout),
-                  onPressed: () {
-                    woocommerce.logUserOut();
-                    loggedInCustomer = new WooCustomer();
-                    Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(builder: (context) => LoginPage()),
-                    );
-                  }),
-            ],
+            shape: _shapeHeader,
           ),
           body: AccountPage(),
         ),
