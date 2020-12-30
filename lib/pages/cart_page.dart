@@ -1,7 +1,6 @@
 import 'package:ecommerceapp/constants.dart';
 import 'package:ecommerceapp/models/cocart_item.dart';
 import 'package:ecommerceapp/models/order_payload.dart';
-import 'package:ecommerceapp/models/payment_gateway.dart';
 import 'package:ecommerceapp/pages/login_page.dart';
 import 'package:ecommerceapp/services/custom_api_service.dart';
 import 'package:ecommerceapp/utils/form_helper.dart';
@@ -17,18 +16,26 @@ class _CartPageState extends State<CartPage> {
   CoCartTotals _totals;
   int lastOrderId;
 
+  bool loading = true;
+
   void getCart() {
+    setState(() {
+      loading = true;
+    });
     CustomApiService.getCart().then((value) {
       setState(() {
         _itemList = value.data;
       });
       this.getTotals();
+      print(value.message);
+      setState(() {
+        loading = false;
+      });
     });
   }
 
   void getTotals() {
     CustomApiService.totalsCart().then((value) {
-      print(value.data);
       setState(() {
         _totals = value.data;
       });
@@ -58,12 +65,21 @@ class _CartPageState extends State<CartPage> {
         }),
       );
     }
+    if (loading) {
+      return Center(child: CircularProgressIndicator());
+    } else {
+      if (_itemList == null) {
+        return Center(
+          child: Text("Sepet Henüz Boş"),
+        );
+      }
+    }
     return SingleChildScrollView(
       child: Column(
         children: [
-          Text('HENÜZ HAZIR DEĞİL ÜZERİNDE ÇALIŞILIYOR'),
+          SizedBox(height: 20),
           Column(
-            children: _itemList != null
+            children: (_itemList != null && _itemList.length > 0)
                 ? _itemList.map((p) {
                     return ListTile(
                       leading: Image.network(p.productImage),
@@ -86,49 +102,40 @@ class _CartPageState extends State<CartPage> {
           ),
           ListTile(
             title: Text("TOPLAM"),
-            subtitle: Text(_totals != null ? _totals.total : ''),
-          ),
-          Divider(),
-          MaterialButton(
-            child: Text("GET NONCE"),
-            onPressed: () {
-              CustomApiService.createNonce().then((value) {
-                print(value.data);
-              });
-            },
+            subtitle: Text((_totals != null && _totals.total.isNotEmpty)
+                ? _totals.total
+                : ''),
           ),
           Divider(height: 50),
-          MaterialButton(
-            child: Text("OrderPayload Create Test"),
-            onPressed: () async {
-              List<LineItem> lineItems = new List<LineItem>();
-              _itemList.forEach((i) {
-                lineItems.add(new LineItem(
-                  productId: i.productId,
-                  quantity: i.quantity,
-                ));
-              });
-              WooOrderPayload wooOrderPayload = new WooOrderPayload(
-                lineItems: lineItems,
-              );
-              woocommerce.createOrder(wooOrderPayload).then((value) {
-                lastOrderId = value.id;
-                print(value.toString());
-              });
-            },
-          ),
+          FormHelper.button("Sepeti Onayla", () {
+            List<LineItem> lineItems = new List<LineItem>();
+            _itemList.forEach((i) {
+              lineItems.add(new LineItem(
+                productId: i.productId,
+                quantity: i.quantity,
+              ));
+            });
+            WooOrderPayload wooOrderPayload = new WooOrderPayload(
+              lineItems: lineItems,
+              customerId: loggedInCustomer.id,
+              billing: WooOrderPayloadBilling.fromJson(
+                loggedInCustomer.billing.toJson(),
+              ),
+              shipping: WooOrderPayloadShipping.fromJson(
+                loggedInCustomer.shipping.toJson(),
+              ),
+            );
+            woocommerce.createOrder(wooOrderPayload).then((value) {
+              lastOrderId = value.id;
+              print('lastOrderId: ' + lastOrderId.toString());
+              if (lastOrderId != null) {
+                CustomApiService.clearCart().then((value) {
+                  this.getCart();
+                });
+              }
+            });
+          }),
           Divider(height: 50),
-          MaterialButton(
-            child: Text("Onayla"),
-            onPressed: () async {
-              WooPaymentGateway paymentGateway = new WooPaymentGateway(
-                order: this.lastOrderId,
-              );
-              woocommerce.updatePaymentGateway(paymentGateway).then((value) {
-                print(value);
-              });
-            },
-          ),
         ],
       ),
     );

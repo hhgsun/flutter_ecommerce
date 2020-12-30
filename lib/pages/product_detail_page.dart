@@ -1,5 +1,6 @@
 import 'package:ecommerceapp/models/products.dart';
 import 'package:ecommerceapp/services/custom_api_service.dart';
+import 'package:ecommerceapp/utils/show_dialog_custom.dart';
 import 'package:ecommerceapp/widgets/favorite_comp.dart';
 import 'package:flutter/material.dart';
 
@@ -48,7 +49,14 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                 ),
               ),
               onPressed: () {
-                CustomApiService.addCart("16", "2").then((value) {});
+                CustomApiService.addCart(_product.id.toString(), "1")
+                    .then((value) {
+                  if (value.success) {
+                    showDialogCustom(context, subTitle: "Ürün Sepete Eklendi");
+                  } else {
+                    showDialogCustom(context, subTitle: value.message);
+                  }
+                });
               },
             ),
             Divider(),

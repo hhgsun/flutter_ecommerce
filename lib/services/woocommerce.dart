@@ -126,6 +126,9 @@ class WooCommerce {
     final response = await http.post(
       this.baseUrl + URL_JWT_TOKEN,
       body: body,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+      },
     );
 
     if (response.statusCode >= 200 && response.statusCode < 300) {
@@ -1189,7 +1192,7 @@ class WooCommerce {
       'parent': parent,
       'parent_exclude': parentExclude,
       'status': status,
-      'customer_id': customer,
+      'customer': customer,
       'product': product,
       'dp': dp,
     }).forEach((k, v) {

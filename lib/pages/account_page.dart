@@ -2,9 +2,11 @@ import 'package:ecommerceapp/constants.dart';
 import 'package:ecommerceapp/models/customer.dart';
 import 'package:ecommerceapp/models/order.dart';
 import 'package:ecommerceapp/pages/login_page.dart';
+import 'package:ecommerceapp/pages/payment_page.dart';
 import 'package:ecommerceapp/utils/form_helper.dart';
 import 'package:ecommerceapp/utils/open_snackbar_bar.dart';
 import 'package:ecommerceapp/utils/show_dialog_custom.dart';
+import 'package:ecommerceapp/widgets/address_box_comp.dart';
 import 'package:flutter/material.dart';
 
 class AccountPage extends StatefulWidget {
@@ -30,10 +32,9 @@ class _AccountPageState extends State<AccountPage> {
     if (loggedInCustomer != null) {
       currUser = WooCustomer.fromJson(loggedInCustomer.toJson());
     }
-    /* if (loggedInCustomer != null) {
+    if (loggedInCustomer != null) {
       this.getOrders();
-    } */
-    print(DateTime.now().toIso8601String());
+    }
     super.initState();
   }
 
@@ -96,39 +97,76 @@ class _AccountPageState extends State<AccountPage> {
                 children: [
                   SingleChildScrollView(
                     child: Column(
-                      children: [
-                        FlatButton(
-                          onPressed: () {
-                            this.getOrders();
-                          },
-                          child: Text('YENİLE'),
-                        ),
-                        Text("Siparişlerim"),
-                        Column(
-                          children: orders.map((o) {
-                            return Column(
-                              children: [
-                                Text(o.id.toString() + ' Siparişler:'),
-                                Column(
-                                  children: o.lineItems
-                                      .map((p) => ListTile(
-                                            title: Text(p.name),
-                                          ))
-                                      .toList(),
-                                ),
-                                Text('TOPLAM: ' + o.total),
-                                Divider(),
-                              ],
+                      children: orders.map((o) {
+                        return GestureDetector(
+                          onTap: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => PaymentPage(o),
+                              ),
                             );
-                          }).toList(),
-                        ),
-                        Text("Bilgiler"),
-                        Center(
-                          child: Text(currUser != null
-                              ? currUser.toJson().toString()
-                              : 'No Login User'),
-                        ),
-                      ],
+                          },
+                          child: Card(
+                            margin: EdgeInsets.all(8.0),
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        'Sipariş No: ' + o.id.toString(),
+                                        style:
+                                            TextStyle(color: Colors.grey[800]),
+                                      ),
+                                      Text(
+                                        DateTime.parse(o.dateCreated)
+                                                .day
+                                                .toString() +
+                                            '.' +
+                                            DateTime.parse(o.dateCreated)
+                                                .month
+                                                .toString() +
+                                            '.' +
+                                            DateTime.parse(o.dateCreated)
+                                                .year
+                                                .toString(),
+                                        style: TextStyle(color: Colors.grey),
+                                      )
+                                    ],
+                                  ),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(o.status),
+                                      Text(o.total + ' TL '),
+                                    ],
+                                  ),
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: o.lineItems
+                                        .map((p) => Row(
+                                              children: [
+                                                Icon(
+                                                  Icons.navigate_next_rounded,
+                                                  color: Colors.grey,
+                                                ),
+                                                Text(p.name)
+                                              ],
+                                            ))
+                                        .toList(),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        );
+                      }).toList(),
                     ),
                   ),
                   SingleChildScrollView(
@@ -178,22 +216,7 @@ class _AccountPageState extends State<AccountPage> {
                           }
                         }),
                         Divider(height: 30),
-                        ListTile(
-                          title: Text('Fatura Adresiniz'),
-                          subtitle: Text(
-                              loggedInCustomer.billing.address1.isNotEmpty
-                                  ? loggedInCustomer.billing.address1
-                                  : 'Henüz Girilmemiş'),
-                          onTap: () {},
-                        ),
-                        ListTile(
-                          title: Text('Gönderim Adresiniz'),
-                          subtitle: Text(
-                              loggedInCustomer.shipping.address1.isNotEmpty
-                                  ? loggedInCustomer.shipping.address1
-                                  : 'Henüz Girilmemiş'),
-                          onTap: () {},
-                        ),
+                        AddressBoxComp(),
                       ]),
                     ),
                   )

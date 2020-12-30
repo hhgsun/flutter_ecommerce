@@ -154,7 +154,7 @@ class _TabsLayoutState extends State<TabsLayout> {
             ],
           ),
         ),
-        drawer: Drawer(
+        /* drawer: Drawer(
           child: ListView(
             children: [
               ListTile(
@@ -165,7 +165,7 @@ class _TabsLayoutState extends State<TabsLayout> {
               )
             ],
           ),
-        ),
+        ), */
       ),
     );
   }
