@@ -1,6 +1,7 @@
 import 'package:ecommerceapp/languages.dart';
 import 'package:ecommerceapp/models/customer.dart';
 import 'package:ecommerceapp/models/product_category.dart';
+import 'package:ecommerceapp/models/products.dart';
 import 'package:ecommerceapp/services/woocommerce.dart';
 import 'package:flutter/material.dart';
 
@@ -58,10 +59,12 @@ String getText(String key) {
   return '***';
 }
 
-// CURRENT USER
+// in app
 WooCustomer loggedInCustomer;
-List<WooProductCategory> categories = [];
-List<String> favoriteProducts = new List<String>();
+List<WooProductCategory> categories = new List<WooProductCategory>();
+List<WooProduct> featuredProducts = new List<WooProduct>();
+List<WooProduct> yenilikler = new List<WooProduct>();
+List<WooProduct> favoriteProducts = new List<WooProduct>();
 
 // CUSTOM
 // const String lostPassUrlForWebView = "/hesabim/lost-password/";

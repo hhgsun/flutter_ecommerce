@@ -1,23 +1,24 @@
+import 'package:ecommerceapp/models/products.dart';
 import 'package:ecommerceapp/services/custom_api_service.dart';
 import 'package:flutter/material.dart';
 
 class FavoriteComp extends StatefulWidget {
-  final int productId;
-  const FavoriteComp(this.productId, {Key key}) : super(key: key);
+  final WooProduct product;
+  const FavoriteComp(this.product, {Key key}) : super(key: key);
   @override
   _FavoriteCompState createState() => _FavoriteCompState();
 }
 
 class _FavoriteCompState extends State<FavoriteComp> {
-  int productId;
+  WooProduct product;
   bool isFav = false;
   bool isLoad = false;
 
   @override
   void initState() {
-    productId = widget.productId;
+    product = widget.product;
     setState(() {
-      isFav = CustomApiService.isFav(productId.toString());
+      isFav = CustomApiService.isFav(product.id);
       isLoad = true;
     });
     super.initState();
@@ -38,7 +39,7 @@ class _FavoriteCompState extends State<FavoriteComp> {
               setState(() {
                 isLoad = false;
               });
-              CustomApiService.deleteFavs(this.productId.toString())
+              CustomApiService.deleteFavs(this.product)
                   .then((value) {
                 if (value.success)
                   setState(() {
@@ -53,7 +54,7 @@ class _FavoriteCompState extends State<FavoriteComp> {
               setState(() {
                 isLoad = false;
               });
-              CustomApiService.addFavs(this.productId.toString()).then((value) {
+              CustomApiService.addFavs(this.product).then((value) {
                 if (value.success)
                   setState(() {
                     isFav = true;

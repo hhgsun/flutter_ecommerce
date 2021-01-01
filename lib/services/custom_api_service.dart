@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:ecommerceapp/models/cocart_item.dart';
+import 'package:ecommerceapp/models/products.dart';
 import 'package:http/http.dart' as http;
 import 'package:ecommerceapp/constants.dart';
 
@@ -112,50 +113,81 @@ class CustomApiService {
 
   // FAVORITES
 
-  static Future<CustomResponseData> addFavs(String productid) async {
+  static bool isRefreshFavorites = true;
+  static bool isFirstFetchFavoriteIds = false;
+  static List<int> favoriteIds = new List<int>();
+
+  static Future<CustomResponseData<dynamic>> addFavs(WooProduct product) async {
+    CustomApiService.isRefreshFavorites = true;
     return CustomApiService._request("/user/favorites/add", data: {
       "userid": loggedInCustomer.id.toString(),
-      "productid": productid
+      "productid": product.id.toString()
     }).then((res) {
-      if (res['success']) {
-        favoriteProducts.add(productid);
-      }
+      CustomApiService.favoriteIds.add(product.id);
       return res;
     }).then((json) => CustomResponseData.fromJson(json));
   }
 
-  static Future<CustomResponseData> deleteFavs(String productid) async {
+  static Future<CustomResponseData<dynamic>> deleteFavs(
+      WooProduct product) async {
+    CustomApiService.isRefreshFavorites = true;
     return CustomApiService._request("/user/favorites/delete", data: {
       "userid": loggedInCustomer.id.toString(),
-      "productid": productid
+      "productid": product.id.toString()
     }).then((res) {
-      if (res['success']) {
-        favoriteProducts.remove(productid.toString());
-      }
+      CustomApiService.favoriteIds.remove(product.id);
       return res;
     }).then((json) => CustomResponseData.fromJson(json));
   }
 
-  static void loadFavs() {
+  static List<int> fetchCustomerFavoriteIds() {
+    List<int> ids = new List<int>();
     if (loggedInCustomer != null) {
       List meta = loggedInCustomer.metaData
           .where((meta) => meta.key == 'favorite_products')
           .toList();
+      favoriteProducts = new List<WooProduct>();
       if (meta.isNotEmpty) {
-        favoriteProducts = new List<String>();
-        print(meta.first.value);
         var values = meta.first.value;
-        if (values.length > 0 && values != null) {
-          values.forEach((v) {
-            favoriteProducts.add(v);
-          });
+        if (values is List) {
+          if (values.length > 0)
+            values.forEach((v) {
+              ids.add(int.parse(v));
+            });
+        } else {
+          if (values.length > 0 && values != null)
+            values.forEach((k, v) {
+              ids.add(int.parse(v));
+            });
         }
       }
     }
+    CustomApiService.favoriteIds = ids;
+    return ids;
   }
 
-  static bool isFav(String productid) {
-    return favoriteProducts.contains(productid);
+  static Future<CustomResponseData<List<WooProduct>>> loadFavProducts() async {
+    if (loggedInCustomer != null && CustomApiService.isRefreshFavorites) {
+      List<int> ids = CustomApiService.favoriteIds;
+      if (!CustomApiService.isFirstFetchFavoriteIds) {
+        ids = CustomApiService.fetchCustomerFavoriteIds();
+        CustomApiService.isFirstFetchFavoriteIds = true;
+      }
+      if (ids.length > 0) {
+        CustomApiService.isRefreshFavorites = false;
+        return woocommerce.getProducts(include: ids).then((value) {
+          favoriteProducts = value;
+          return CustomResponseData(true, favoriteProducts);
+        });
+      } else {
+        favoriteProducts = new List<WooProduct>();
+      }
+    }
+    return CustomResponseData(true, favoriteProducts);
+  }
+
+  static bool isFav(int productid) {
+    return favoriteProducts.where((p) => p.id == productid).isNotEmpty;
   }
 
   // GENERAL DATA
@@ -174,7 +206,10 @@ class CustomResponseData<T> {
   T data;
   String message;
   CustomResponseData(this.success, this.data, {this.message});
-  factory CustomResponseData.fromJson(Map json) =>
-      CustomResponseData(json['success'], json['data'],
-          message: json['message'] ? json['message'] : '');
+  factory CustomResponseData.fromJson(Map<String, dynamic> json) =>
+      CustomResponseData(
+        json['success'] != null ? json['success'] : false,
+        json['data'] != null ? json['data'] : '',
+        message: json['message'] != null ? json['message'] : null,
+      );
 }

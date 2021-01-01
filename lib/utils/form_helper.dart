@@ -10,7 +10,7 @@ class FormHelper {
     Function onChanged, {
     String hintText,
     String helperText,
-    bool isTextArea = false,
+    int lineCount = 1,
     TextInputType inputType = TextInputType.text,
     obscureText: false,
     Function onValidate,
@@ -24,9 +24,10 @@ class FormHelper {
         hintText,
         helperText,
         suffixIcon: suffixIcon,
+        prefixIcon: prefixIcon,
       ),
       obscureText: obscureText,
-      maxLines: !isTextArea ? 1 : 3,
+      maxLines: lineCount,
       keyboardType: inputType,
       onChanged: (String value) {
         return onChanged(value);

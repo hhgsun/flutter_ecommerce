@@ -416,7 +416,16 @@ class WooCommerce {
       'max_price': maxPrice,
       'stock_status': stockStatus,
     }).forEach((k, v) {
-      if (v != null) payload[k] = v.toString();
+      if (v != null) {
+        if (k == 'include') {
+          payload[k] = '';
+          for (var id in v) {
+            payload[k] = payload[k] + id.toString() + ',';
+          }
+        } else {
+          payload[k] = v.toString();
+        }
+      }
     });
 
     _printToLog("Parameters: " + payload.toString());

@@ -12,7 +12,6 @@ class _AddressBoxCompState extends State<AddressBoxComp> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Divider(height: 30),
         ListTile(
           title: Text('Fatura Adresiniz'),
           subtitle: Text(loggedInCustomer.billing.address1.isEmpty

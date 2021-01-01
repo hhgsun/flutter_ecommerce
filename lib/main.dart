@@ -1,5 +1,4 @@
 import 'package:ecommerceapp/constants.dart';
-import 'package:ecommerceapp/services/custom_api_service.dart';
 import 'package:ecommerceapp/pages/login_page.dart';
 import 'package:ecommerceapp/pages/splashscreen_page.dart';
 import 'package:ecommerceapp/widgets/tabs_layout.dart';
@@ -47,7 +46,6 @@ class _TabsContainerState extends State<TabsContainer> {
           print("LOGGED IN USER ID: " + userid.toString());
           woocommerce.getCustomerById(id: userid).then((customer) {
             loggedInCustomer = customer;
-            CustomApiService.loadFavs();
             setState(() {
               _statsAuth = STATS_AUTH.login;
             });

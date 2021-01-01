@@ -12,48 +12,64 @@ class FavoritesPage extends StatefulWidget {
 }
 
 class _FavoritesPageState extends State<FavoritesPage> {
-  List<WooProduct> favList = [];
+  List<WooProduct> favList = new List<WooProduct>();
+  bool isLoad = false;
+
+  void loadFavs() {
+    setState(() {
+      isLoad = false;
+    });
+    if (loggedInCustomer != null) {
+      CustomApiService.loadFavProducts().then((value) {
+        setState(() {
+          favList = favoriteProducts;
+          isLoad = true;
+        });
+      });
+    } else {
+      setState(() {
+        isLoad = true;
+      });
+    }
+  }
 
   @override
   void initState() {
-    favoriteProducts.forEach((id) {
-      woocommerce.getProductById(id: int.parse(id)).then((product) {
-        setState(() {
-          favList.add(product);
-        });
-      });
-    });
+    this.loadFavs();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    if (!isLoad) {
+      return Center(child: CircularProgressIndicator());
+    }
+    if (loggedInCustomer != null && favList.length == 0) {
+      return Center(child: Text('Favori ürününüz bulunmamaktadır.'));
+    }
     return loggedInCustomer != null
         ? Column(
             children: favList
                 .map((p) => ListTile(
                       title: Text(p.name),
-                      leading: IconButton(
-                          icon: Icon(Icons.close),
-                          onPressed: () {
-                            CustomApiService.deleteFavs(p.id.toString()).then(
-                              (value) {
-                                int index = this.favList.indexOf(p);
-                                setState(() {
-                                  this.favList.remove(index);
-                                });
-                              },
-                            );
-                          }),
-                      trailing: IconButton(
-                          icon: Icon(Icons.arrow_forward_ios_sharp),
-                          onPressed: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) => ProductDetailPage(p),
-                              ),
-                            );
-                          }),
+                      leading: p.images.length > 0
+                          ? Image(
+                              image: NetworkImage(p.images[0].src),
+                            )
+                          : Text(""),
+                      onTap: () {
+                        Navigator.of(context)
+                            .push(
+                          MaterialPageRoute(
+                            builder: (context) => ProductDetailPage(p),
+                          ),
+                        )
+                            .then((value) {
+                          if (CustomApiService.isRefreshFavorites) {
+                            this.loadFavs();
+                          }
+                        });
+                      },
                     ))
                 .toList(),
           )

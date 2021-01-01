@@ -28,7 +28,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
       appBar: AppBar(
         title: Text(_product.name),
         actions: [
-          FavoriteComp(_product.id),
+          FavoriteComp(_product),
         ],
       ),
       body: SingleChildScrollView(

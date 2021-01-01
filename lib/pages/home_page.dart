@@ -9,25 +9,22 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  List<WooProduct> _featuredProducts = [];
-  List<WooProduct> _yenilikler = [];
-
   @override
   void initState() {
     super.initState();
-    if (_featuredProducts == null || _featuredProducts.length == 0) {
-      woocommerce.getProducts(featured: true).then((value) {
+    if (featuredProducts == null || featuredProducts.length == 0) {
+      woocommerce.getProducts(featured: true, page: 1).then((value) {
         setState(() {
-          this._featuredProducts = value;
+          featuredProducts = value;
         });
       });
     }
 
-    if (_yenilikler == null || _yenilikler.length == 0) {
+    if (yenilikler == null || yenilikler.length == 0) {
       woocommerce.getProducts().then((value) {
         if (value != null && value.length > 0) {
           setState(() {
-            this._yenilikler = value;
+            yenilikler = value;
           });
         }
       });
@@ -75,7 +72,7 @@ class _HomePageState extends State<HomePage> {
               height: 200,
               child: ListView(
                 scrollDirection: Axis.horizontal,
-                children: _featuredProducts
+                children: featuredProducts
                     .map((f) => Container(
                           width: MediaQuery.of(context).size.width - 40.0,
                           margin: EdgeInsets.fromLTRB(10, 10, 5, 10),
@@ -121,7 +118,8 @@ class _HomePageState extends State<HomePage> {
                           ),
                           decoration: BoxDecoration(
                             color: colorLightDart,
-                            borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(10.0)),
                           ),
                         ))
                     .toList(),
@@ -129,7 +127,7 @@ class _HomePageState extends State<HomePage> {
             ),
             Divider(),
             Text("Yenilikler", style: TextStyle(fontWeight: FontWeight.bold)),
-            _widgets(_yenilikler),
+            _widgets(yenilikler),
           ],
         ),
       ),
