@@ -1,3 +1,4 @@
+import 'package:ecommerceapp/models/customer.dart';
 import 'package:flutter/material.dart';
 
 class WooOrder {
@@ -353,7 +354,7 @@ class FeeLineTax {
   }
 }
 
-class Billing {
+/* class Billing {
   String firstName;
   String lastName;
   String company;
@@ -408,9 +409,9 @@ class Billing {
     data['phone'] = this.phone;
     return data;
   }
-}
+} */
 
-class Shipping {
+/* class Shipping {
   String firstName;
   String lastName;
   String company;
@@ -457,7 +458,7 @@ class Shipping {
     data['country'] = this.country;
     return data;
   }
-}
+} */
 
 class MetaData {
   int id;

@@ -17,7 +17,6 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
   @override
   void initState() {
     _product = widget.product;
-
     super.initState();
   }
 
@@ -34,9 +33,8 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
         child: Column(
           children: [
             Image.network(_product.images.first.src),
-            Text("Satışta: " + _product.onSale.toString()),
-            Divider(),
-            AddToCartComp(_product),
+            // Text("Satışta: " + _product.onSale.toString()),
+            AddToCartComp(_product),// add to cart
             Divider(),
             ListTile(
               title: Text("Fiyat:"),

@@ -9,9 +9,7 @@ import 'package:flutter/material.dart';
 
 ////////////////////////////////////////////////
 // CUSTOM SETTINGS ---- ////////////////////////
-
 const String appName = "ECommerce App";
-
 // woocommerce and wordpress
 WooCommerce woocommerce = WooCommerce(
   baseUrl: "https://canliozelders.com",
@@ -26,9 +24,20 @@ const Color colorDark = Colors.black87;
 const Color colorLightDart = Colors.black54;
 const Color colorwhite = Colors.white;
 const Color colorFocus = Colors.indigoAccent;
-
 // ---- CUSTOM SETTINGS ////////////////////////
 ////////////////////////////////////////////////
+
+// SERVICE CUSTOM
+// const String lostPassUrlForWebView = "/hesabim/lost-password/";
+const String customApiNamespace = "/wp-json/hhgsun/v1";
+const URL_STORE_API_PATH = '/wp-json/wc/store/';
+const URL_JWT_BASE = '/wp-json/jwt-auth/v1';
+const URL_JWT_TOKEN = '$URL_JWT_BASE/token';
+const DEFAULT_WC_API_PATH = "/wp-json/wc/v3/";
+const URL_WP_BASE = '/wp-json/wp/v2';
+const URL_USER_ME = '$URL_WP_BASE/users/me';
+const URL_REGISTER_ENDPOINT = '$URL_WP_BASE/users/register';
+//
 
 // GENERATE WP USERNAME
 String generateUsernameByEmail(String email) {
@@ -61,6 +70,26 @@ String getText(String key) {
   return '***';
 }
 
+// ORDER STATUS
+String getOrderStatusDisplayName(String status) {
+  if (status == 'pending')
+    return 'ÖDEME BEKLENİYOR';
+  else if (status == 'processing')
+    return 'İŞLENİYOR';
+  else if (status == 'on-hold')
+    return 'BEKLEMEDE';
+  else if (status == 'completed')
+    return 'TAMAMLANDI';
+  else if (status == 'cancelled')
+    return 'İPTAL EDİLDİ';
+  else if (status == 'refunded')
+    return 'İADE EDİLDİ';
+  else if (status == 'failed')
+    return 'BAŞARISIZ';
+  else if (status == 'trash') return 'SİLİNMİŞ SİPARİŞ';
+  return 'ÖDEME BEKLENİYOR';
+}
+
 // in app
 WooCustomer loggedInCustomer;
 List<WooProductCategory> categories = new List<WooProductCategory>();
@@ -73,15 +102,4 @@ List<CoCartItem> cartItems = List<CoCartItem>();
 bool isRefreshOrders = true;
 List<WooOrder> orders = new List<WooOrder>();
 
-// CUSTOM
-// const String lostPassUrlForWebView = "/hesabim/lost-password/";
-const String customApiNamespace = "/wp-json/hhgsun/v1";
 
-//
-const URL_STORE_API_PATH = '/wp-json/wc/store/';
-const URL_JWT_BASE = '/wp-json/jwt-auth/v1';
-const URL_JWT_TOKEN = '$URL_JWT_BASE/token';
-const DEFAULT_WC_API_PATH = "/wp-json/wc/v3/";
-const URL_WP_BASE = '/wp-json/wp/v2';
-const URL_USER_ME = '$URL_WP_BASE/users/me';
-const URL_REGISTER_ENDPOINT = '$URL_WP_BASE/users/register';

@@ -3,6 +3,7 @@ import 'package:ecommerceapp/models/products.dart';
 import 'package:ecommerceapp/services/custom_api_service.dart';
 import 'package:ecommerceapp/utils/form_helper.dart';
 import 'package:ecommerceapp/utils/loading_dialog.dart';
+import 'package:ecommerceapp/utils/open_snackbar_bar.dart';
 import 'package:ecommerceapp/utils/show_dialog_custom.dart';
 import 'package:flutter/material.dart';
 
@@ -22,7 +23,7 @@ class _AddToCartCompState extends State<AddToCartComp> {
   @override
   void initState() {
     product = widget.product;
-    if (cartItems.length > 0) {
+    if (cartItems != null && cartItems.length > 0) {
       cartItems.forEach((element) {
         if (element.productId == product.id) {
           setState(() {
@@ -68,7 +69,7 @@ class _AddToCartCompState extends State<AddToCartComp> {
                   cartItems = res.data;
                   this.addCount = this.addCount + 1;
                 });
-                showDialogCustom(context, subTitle: "Ürün Sepete Eklendi");
+                openSnackBar(context, "Ürün Sepete Eklendi");
               } else {
                 showDialogCustom(context, subTitle: res.message);
               }

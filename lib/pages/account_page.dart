@@ -1,11 +1,11 @@
 import 'package:ecommerceapp/constants.dart';
 import 'package:ecommerceapp/models/customer.dart';
 import 'package:ecommerceapp/pages/login_page.dart';
-import 'package:ecommerceapp/pages/payment_page.dart';
 import 'package:ecommerceapp/utils/form_helper.dart';
 import 'package:ecommerceapp/utils/open_snackbar_bar.dart';
 import 'package:ecommerceapp/utils/show_dialog_custom.dart';
 import 'package:ecommerceapp/widgets/address_box_comp.dart';
+import 'package:ecommerceapp/widgets/order_item_comp.dart';
 import 'package:flutter/material.dart';
 
 class AccountPage extends StatefulWidget {
@@ -182,64 +182,7 @@ class _AccountPageState extends State<AccountPage> {
       return SingleChildScrollView(
         child: Column(
           children: orders.map((o) {
-            return GestureDetector(
-              onTap: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => PaymentPage(o),
-                  ),
-                );
-              },
-              child: Card(
-                margin: EdgeInsets.all(8.0),
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Sipariş No: ' + o.id.toString(),
-                            style: TextStyle(color: Colors.grey[800]),
-                          ),
-                          Text(
-                            DateTime.parse(o.dateCreated).day.toString() +
-                                '.' +
-                                DateTime.parse(o.dateCreated).month.toString() +
-                                '.' +
-                                DateTime.parse(o.dateCreated).year.toString(),
-                            style: TextStyle(color: Colors.grey),
-                          )
-                        ],
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(o.status),
-                          Text(o.total + ' TL '),
-                        ],
-                      ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: o.lineItems
-                            .map((p) => Row(
-                                  children: [
-                                    Icon(
-                                      Icons.navigate_next_rounded,
-                                      color: Colors.grey,
-                                    ),
-                                    Text(p.name)
-                                  ],
-                                ))
-                            .toList(),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            );
+            return OrderItemComp(order: o);
           }).toList(),
         ),
       );

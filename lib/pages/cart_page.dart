@@ -1,11 +1,13 @@
 import 'package:ecommerceapp/constants.dart';
 import 'package:ecommerceapp/models/cocart_item.dart';
+import 'package:ecommerceapp/models/order.dart';
 import 'package:ecommerceapp/models/order_payload.dart';
 import 'package:ecommerceapp/pages/login_page.dart';
 import 'package:ecommerceapp/pages/payment_page.dart';
 import 'package:ecommerceapp/services/custom_api_service.dart';
 import 'package:ecommerceapp/utils/form_helper.dart';
 import 'package:ecommerceapp/utils/loading_dialog.dart';
+import 'package:ecommerceapp/widgets/order_item_comp.dart';
 import 'package:flutter/material.dart';
 
 class CartPage extends StatefulWidget {
@@ -77,6 +79,12 @@ class _CartPageState extends State<CartPage> {
       return Center(child: CircularProgressIndicator());
     } else {
       if (cartItems == null) {
+        List<WooOrder> lastOrders = new List<WooOrder>();
+        orders.forEach((element) {
+          if (element.status == 'pending') {
+            lastOrders.add(element);
+          }
+        });
         return Container(
           width: double.maxFinite,
           child: Column(
@@ -85,6 +93,20 @@ class _CartPageState extends State<CartPage> {
               Icon(statusIcon, size: 50, color: colorLightDart),
               SizedBox(height: 25),
               Text(statusMessage, textAlign: TextAlign.center),
+              (lastOrders != null && lastOrders.length > 0)
+                  ? Column(
+                      children: [
+                        Divider(height: 50),
+                        Container(
+                          padding: EdgeInsets.only(left: 20.0),
+                          alignment: Alignment.centerLeft,
+                          child: Text('İşlem Bekleyen Son Siparişiniz',
+                              style: TextStyle(color: colorLightDart)),
+                        ),
+                        OrderItemComp(order: lastOrders.first)
+                      ],
+                    )
+                  : SizedBox(),
             ],
           ),
         );
@@ -126,49 +148,54 @@ class _CartPageState extends State<CartPage> {
               : CircularProgressIndicator(),
           Divider(height: 50),
           (cartItems.length > 0 && _totals != null)
-              ? FormHelper.button("Sepeti Onayla", () {
-                  loadingOpen(context);
-                  List<LineItem> lineItems = new List<LineItem>();
-                  cartItems.forEach((i) {
-                    lineItems.add(new LineItem(
-                      productId: i.productId,
-                      quantity: i.quantity,
-                    ));
-                  });
-                  WooOrderPayload wooOrderPayload = new WooOrderPayload(
-                    lineItems: lineItems,
-                    customerId: loggedInCustomer.id,
-                    billing: WooOrderPayloadBilling.fromJson(
-                      loggedInCustomer.billing.toJson(),
-                    ),
-                    shipping: WooOrderPayloadShipping.fromJson(
-                      loggedInCustomer.shipping.toJson(),
-                    ),
-                  );
-                  woocommerce.createOrder(wooOrderPayload).then((order) {
-                    loadingHide(context);
-                    if (order != null) {
-                      CustomApiService.clearCart().then((value) {
-                        this.getCart();
-                        setState(() {
-                          this.statusIcon = Icons.info;
-                          this.statusMessage =
-                              "Verdiğiniz siparişi Hesabım sekmesinde Siparişlerim bölümünde görebilirsiniz.";
-                        });
-                      });
-                      isRefreshOrders = true;
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => PaymentPage(order),
-                        ),
-                      );
-                    }
-                  });
-                })
+              ? FormHelper.button("Sepeti Onayla", this.sepetiOnayla)
               : FormHelper.button("...", () {}),
           Divider(height: 50),
         ],
       ),
     );
+  }
+
+  void sepetiOnayla() {
+    loadingOpen(context);
+    List<LineItem> lineItems = new List<LineItem>();
+    cartItems.forEach((i) {
+      lineItems.add(new LineItem(
+        productId: i.productId,
+        quantity: i.quantity,
+      ));
+    });
+    WooOrderPayload wooOrderPayload = new WooOrderPayload(
+      lineItems: lineItems,
+      customerId: loggedInCustomer.id,
+      billing: WooOrderPayloadBilling.fromJson(
+        loggedInCustomer.billing.toJson(),
+      ),
+      shipping: WooOrderPayloadShipping.fromJson(
+        loggedInCustomer.shipping.toJson(),
+      ),
+    );
+    woocommerce.createOrder(wooOrderPayload).then((order) {
+      loadingHide(context);
+      if (order != null) {
+        CustomApiService.clearCart().then((value) {
+          this.getCart();
+          setState(() {
+            this.statusIcon = Icons.info;
+            this.statusMessage =
+                "Verdiğiniz siparişi Hesabım sekmesinde Siparişlerim bölümünde görebilirsiniz.";
+          });
+        });
+        isRefreshOrders = true;
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => PaymentPage(
+              order,
+              isNewPayment: true,
+            ),
+          ),
+        );
+      }
+    });
   }
 }
