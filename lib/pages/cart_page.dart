@@ -2,8 +2,10 @@ import 'package:ecommerceapp/constants.dart';
 import 'package:ecommerceapp/models/cocart_item.dart';
 import 'package:ecommerceapp/models/order_payload.dart';
 import 'package:ecommerceapp/pages/login_page.dart';
+import 'package:ecommerceapp/pages/payment_page.dart';
 import 'package:ecommerceapp/services/custom_api_service.dart';
 import 'package:ecommerceapp/utils/form_helper.dart';
+import 'package:ecommerceapp/utils/loading_dialog.dart';
 import 'package:flutter/material.dart';
 
 class CartPage extends StatefulWidget {
@@ -12,26 +14,32 @@ class CartPage extends StatefulWidget {
 }
 
 class _CartPageState extends State<CartPage> {
-  List<CoCartItem> _itemList;
   CoCartTotals _totals;
-  int lastOrderId;
 
-  bool loading = true;
+  bool isLoadCart = true;
+
+  IconData statusIcon = Icons.shopping_cart_outlined;
+  String statusMessage = "Sepet Henüz Boş";
 
   void getCart() {
     setState(() {
-      loading = true;
+      isLoadCart = false;
     });
-    CustomApiService.getCart().then((value) {
-      setState(() {
-        _itemList = value.data;
+    if (isRefreshCart) {
+      CustomApiService.getCart().then((value) {
+        this.getTotals();
+        setState(() {
+          cartItems = value.data;
+          isLoadCart = true;
+          isRefreshCart = false;
+        });
       });
+    } else {
       this.getTotals();
-      print(value.message);
       setState(() {
-        loading = false;
+        isLoadCart = true;
       });
-    });
+    }
   }
 
   void getTotals() {
@@ -65,12 +73,20 @@ class _CartPageState extends State<CartPage> {
         }),
       );
     }
-    if (loading) {
+    if (!isLoadCart) {
       return Center(child: CircularProgressIndicator());
     } else {
-      if (_itemList == null) {
-        return Center(
-          child: Text("Sepet Henüz Boş"),
+      if (cartItems == null) {
+        return Container(
+          width: double.maxFinite,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(statusIcon, size: 50, color: colorLightDart),
+              SizedBox(height: 25),
+              Text(statusMessage, textAlign: TextAlign.center),
+            ],
+          ),
         );
       }
     }
@@ -79,8 +95,8 @@ class _CartPageState extends State<CartPage> {
         children: [
           SizedBox(height: 20),
           Column(
-            children: (_itemList != null && _itemList.length > 0)
-                ? _itemList.map((p) {
+            children: (cartItems != null && cartItems.length > 0)
+                ? cartItems.map((p) {
                     return ListTile(
                       leading: Image.network(p.productImage),
                       title: Text(p.productName),
@@ -89,10 +105,12 @@ class _CartPageState extends State<CartPage> {
                       trailing: IconButton(
                         icon: Icon(Icons.clear),
                         onPressed: () {
-                          CustomApiService.deleteCart(p.key).then((value) {
-                            print(value.data);
+                          CustomApiService.deleteCart(p.key).then((res) {
                             this.getCart();
                             this.getTotals();
+                            setState(() {
+                              cartItems = res.data;
+                            });
                           });
                         },
                       ),
@@ -100,41 +118,54 @@ class _CartPageState extends State<CartPage> {
                   }).toList()
                 : [],
           ),
-          ListTile(
-            title: Text("TOPLAM"),
-            subtitle: Text((_totals != null && _totals.total.isNotEmpty)
-                ? _totals.total
-                : ''),
-          ),
+          (_totals != null && _totals.total.isNotEmpty)
+              ? ListTile(
+                  title: Text("TOPLAM"),
+                  subtitle: Text(_totals.total),
+                )
+              : CircularProgressIndicator(),
           Divider(height: 50),
-          FormHelper.button("Sepeti Onayla", () {
-            List<LineItem> lineItems = new List<LineItem>();
-            _itemList.forEach((i) {
-              lineItems.add(new LineItem(
-                productId: i.productId,
-                quantity: i.quantity,
-              ));
-            });
-            WooOrderPayload wooOrderPayload = new WooOrderPayload(
-              lineItems: lineItems,
-              customerId: loggedInCustomer.id,
-              billing: WooOrderPayloadBilling.fromJson(
-                loggedInCustomer.billing.toJson(),
-              ),
-              shipping: WooOrderPayloadShipping.fromJson(
-                loggedInCustomer.shipping.toJson(),
-              ),
-            );
-            woocommerce.createOrder(wooOrderPayload).then((value) {
-              lastOrderId = value.id;
-              print('lastOrderId: ' + lastOrderId.toString());
-              if (lastOrderId != null) {
-                CustomApiService.clearCart().then((value) {
-                  this.getCart();
-                });
-              }
-            });
-          }),
+          (cartItems.length > 0 && _totals != null)
+              ? FormHelper.button("Sepeti Onayla", () {
+                  loadingOpen(context);
+                  List<LineItem> lineItems = new List<LineItem>();
+                  cartItems.forEach((i) {
+                    lineItems.add(new LineItem(
+                      productId: i.productId,
+                      quantity: i.quantity,
+                    ));
+                  });
+                  WooOrderPayload wooOrderPayload = new WooOrderPayload(
+                    lineItems: lineItems,
+                    customerId: loggedInCustomer.id,
+                    billing: WooOrderPayloadBilling.fromJson(
+                      loggedInCustomer.billing.toJson(),
+                    ),
+                    shipping: WooOrderPayloadShipping.fromJson(
+                      loggedInCustomer.shipping.toJson(),
+                    ),
+                  );
+                  woocommerce.createOrder(wooOrderPayload).then((order) {
+                    loadingHide(context);
+                    if (order != null) {
+                      CustomApiService.clearCart().then((value) {
+                        this.getCart();
+                        setState(() {
+                          this.statusIcon = Icons.info;
+                          this.statusMessage =
+                              "Verdiğiniz siparişi Hesabım sekmesinde Siparişlerim bölümünde görebilirsiniz.";
+                        });
+                      });
+                      isRefreshOrders = true;
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => PaymentPage(order),
+                        ),
+                      );
+                    }
+                  });
+                })
+              : FormHelper.button("...", () {}),
           Divider(height: 50),
         ],
       ),

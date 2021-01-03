@@ -136,7 +136,34 @@ class _TabsLayoutState extends State<TabsLayout> {
                 ),
               ),
               Tab(
-                icon: Icon(Icons.shopping_basket_rounded, size: tabIconSize),
+                icon: Stack(
+                  children: [
+                    Icon(Icons.shopping_basket_rounded, size: tabIconSize),
+                    (cartItems != null && cartItems.length > 0)
+                        ? Positioned(
+                            right: 0,
+                            bottom: 0,
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(50),
+                              child: Container(
+                                width: 15.0,
+                                height: 15.0,
+                                alignment: Alignment.center,
+                                color: colorPrimary,
+                                child: Text(
+                                  cartItems.length.toString(),
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 11.0,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                            ),
+                          )
+                        : Text(''),
+                  ],
+                ),
                 iconMargin: EdgeInsets.only(bottom: 5),
                 child: Text(
                   getText("tab_cart"),

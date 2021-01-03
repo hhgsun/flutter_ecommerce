@@ -1,6 +1,7 @@
 import 'package:ecommerceapp/constants.dart';
 import 'package:ecommerceapp/pages/login_page.dart';
 import 'package:ecommerceapp/pages/splashscreen_page.dart';
+import 'package:ecommerceapp/services/custom_api_service.dart';
 import 'package:ecommerceapp/widgets/tabs_layout.dart';
 import 'package:flutter/material.dart';
 
@@ -46,6 +47,11 @@ class _TabsContainerState extends State<TabsContainer> {
           print("LOGGED IN USER ID: " + userid.toString());
           woocommerce.getCustomerById(id: userid).then((customer) {
             loggedInCustomer = customer;
+            CustomApiService.getCart().then((cart) {
+              setState(() {
+                cartItems = cart.data;
+              });
+            });
             setState(() {
               _statsAuth = STATS_AUTH.login;
             });

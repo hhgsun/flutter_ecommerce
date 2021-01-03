@@ -1,5 +1,7 @@
 import 'package:ecommerceapp/languages.dart';
+import 'package:ecommerceapp/models/cocart_item.dart';
 import 'package:ecommerceapp/models/customer.dart';
+import 'package:ecommerceapp/models/order.dart';
 import 'package:ecommerceapp/models/product_category.dart';
 import 'package:ecommerceapp/models/products.dart';
 import 'package:ecommerceapp/services/woocommerce.dart';
@@ -64,7 +66,12 @@ WooCustomer loggedInCustomer;
 List<WooProductCategory> categories = new List<WooProductCategory>();
 List<WooProduct> featuredProducts = new List<WooProduct>();
 List<WooProduct> yenilikler = new List<WooProduct>();
+
 List<WooProduct> favoriteProducts = new List<WooProduct>();
+bool isRefreshCart = true;
+List<CoCartItem> cartItems = List<CoCartItem>();
+bool isRefreshOrders = true;
+List<WooOrder> orders = new List<WooOrder>();
 
 // CUSTOM
 // const String lostPassUrlForWebView = "/hesabim/lost-password/";

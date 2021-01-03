@@ -50,6 +50,7 @@ class CustomApiService {
       (loggedInCustomer != null ? loggedInCustomer.id.toString() : nonceStore);
 
   static Future<CustomResponseData<List<CoCartItem>>> getCart() {
+    isRefreshCart = false;
     return _request("/get-cart?thumb=true&cart_key=" + cartKey,
             nameSpace: _wpWooNameSpace, type: REQUEST_TYPE.GET)
         .then((res) {
@@ -59,12 +60,16 @@ class CustomApiService {
       Map values = res;
       List<CoCartItem> items =
           values.entries.map((e) => CoCartItem.fromJson(e.value)).toList();
+      if (items.length > 0) {
+        cartItems = items;
+      }
       return new CustomResponseData(true, items);
     });
   }
 
-  static Future<CustomResponseData<List>> addCart(
+  static Future<CustomResponseData<List<CoCartItem>>> addCart(
       String productid, String quantity) {
+    isRefreshCart = true;
     Map<String, String> data = {"product_id": productid, "quantity": quantity};
     return _request("/add-item?return_cart=true&cart_key=" + cartKey,
             data: data, nameSpace: _wpWooNameSpace)
@@ -74,21 +79,37 @@ class CustomApiService {
       Map values = res;
       List<CoCartItem> items =
           values.entries.map((e) => CoCartItem.fromJson(e.value)).toList();
+      if (items.length > 0) {
+        cartItems = items;
+      }
       return new CustomResponseData(true, items);
     });
   }
 
-  static Future<CustomResponseData> deleteCart(String cartItemKey) {
+  static Future<CustomResponseData<List<CoCartItem>>> deleteCart(String cartItemKey) {
+    isRefreshCart = true;
     return _request(
-            "/item?cart_key=" + cartKey + "&cart_item_key=" + cartItemKey,
+            "/item?return_cart=true&cart_key=" +
+                cartKey +
+                "&cart_item_key=" +
+                cartItemKey,
             nameSpace: _wpWooNameSpace,
             type: REQUEST_TYPE.DELETE)
-        .then((value) {
-      return new CustomResponseData(true, value);
+        .then((res) {
+      if (!(res is Map) || res.length == 0)
+        return new CustomResponseData(false, null, message: res['message']);
+      Map values = res;
+      List<CoCartItem> items =
+          values.entries.map((e) => CoCartItem.fromJson(e.value)).toList();
+      if (items.length > 0) {
+        cartItems = items;
+      }
+      return new CustomResponseData(true, items);
     });
   }
 
   static Future<CustomResponseData> clearCart() {
+    isRefreshCart = true;
     return _request("/clear?cart_key=" + cartKey,
             nameSpace: _wpWooNameSpace, type: REQUEST_TYPE.POST)
         .then((value) {
