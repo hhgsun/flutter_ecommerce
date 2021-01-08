@@ -1,3 +1,4 @@
+import 'package:ecommerceapp/constants.dart';
 import 'package:ecommerceapp/models/products.dart';
 import 'package:ecommerceapp/services/custom_api_service.dart';
 import 'package:flutter/material.dart';
@@ -34,13 +35,14 @@ class _FavoriteCompState extends State<FavoriteComp> {
     }
     return isFav
         ? IconButton(
+            color: colorPrimary,
+            tooltip: 'Favorilerimden Kaldır',
             icon: Icon(Icons.favorite),
             onPressed: () {
               setState(() {
                 isLoad = false;
               });
-              CustomApiService.deleteFavs(this.product)
-                  .then((value) {
+              CustomApiService.deleteFavs(this.product).then((value) {
                 if (value.success)
                   setState(() {
                     isFav = false;
@@ -49,6 +51,8 @@ class _FavoriteCompState extends State<FavoriteComp> {
               });
             })
         : IconButton(
+            color: colorPrimary,
+            tooltip: 'Favorilerime Ekle',
             icon: Icon(Icons.favorite_border),
             onPressed: () {
               setState(() {

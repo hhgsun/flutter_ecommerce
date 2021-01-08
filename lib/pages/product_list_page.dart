@@ -31,37 +31,6 @@ class _ProductListPageState extends State<ProductListPage> {
     });
   }
 
-  Widget buildRating(BuildContext context, double rating) {
-    return Row(
-      children: new List.generate(
-        5,
-        (index) {
-          Icon icon;
-          if (index >= rating) {
-            icon = new Icon(
-              Icons.star_border,
-              color: colorPrimary,
-              size: 15,
-            );
-          } else if (index > rating - 1 && index < rating) {
-            icon = new Icon(
-              Icons.star_half,
-              color: colorPrimary,
-              size: 15,
-            );
-          } else {
-            icon = new Icon(
-              Icons.star,
-              color: colorPrimary,
-              size: 15,
-            );
-          }
-          return icon;
-        },
-      ),
-    );
-  }
-
   Widget renderBody(context) {
     var mediaQueryData = MediaQuery.of(context);
     final double widthScreen = mediaQueryData.size.width;
@@ -118,10 +87,8 @@ class _ProductListPageState extends State<ProductListPage> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          this.buildRating(
-                            context,
-                            double.parse(this.productList[index].averageRating),
-                          ),
+                          renderRating(
+                              context, this.productList[index].averageRating),
                           Row(
                             children: [
                               this.productList[index].regularPrice != null
@@ -134,7 +101,7 @@ class _ProductListPageState extends State<ProductListPage> {
                                     )
                                   : Text(''),
                               Text(
-                                ' '+this.productList[index].price + ' TL ',
+                                ' ' + this.productList[index].price + ' TL ',
                                 style: TextStyle(fontWeight: FontWeight.w900),
                               ),
                             ],

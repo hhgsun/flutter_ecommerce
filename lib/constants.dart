@@ -90,6 +90,46 @@ String getOrderStatusDisplayName(String status) {
   return 'ÖDEME BEKLENİYOR';
 }
 
+// RATING NUMBER TO STAR IMAGES WIDGET
+Widget renderRating(BuildContext context, String averageRating,
+    {double iconSize = 15}) {
+  double rating = double.parse(averageRating);
+  return Row(
+    children: new List.generate(
+      5,
+      (index) {
+        Icon icon;
+        if (index >= rating) {
+          icon = new Icon(
+            Icons.star_border,
+            color: colorPrimary,
+            size: iconSize,
+          );
+        } else if (index > rating - 1 && index < rating) {
+          icon = new Icon(
+            Icons.star_half,
+            color: colorPrimary,
+            size: iconSize,
+          );
+        } else {
+          icon = new Icon(
+            Icons.star,
+            color: colorPrimary,
+            size: iconSize,
+          );
+        }
+        return icon;
+      },
+    ),
+  );
+}
+
+// CLEAN HTML
+String removeAllHtmlTags(String htmlText) {
+  RegExp exp = RegExp(r"<[^>]*>", multiLine: true, caseSensitive: true);
+  return htmlText.replaceAll(exp, '');
+}
+
 // in app
 WooCustomer loggedInCustomer;
 List<WooProductCategory> categories = new List<WooProductCategory>();
@@ -101,5 +141,3 @@ bool isRefreshCart = true;
 List<CoCartItem> cartItems = List<CoCartItem>();
 bool isRefreshOrders = true;
 List<WooOrder> orders = new List<WooOrder>();
-
-
