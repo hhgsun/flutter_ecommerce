@@ -13,6 +13,7 @@ class ECommerce extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      locale: Locale('tr'),
       title: appName,
       theme: ThemeData(
         primarySwatch: colorPrimary,

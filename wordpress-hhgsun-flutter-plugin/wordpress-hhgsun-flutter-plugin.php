@@ -36,6 +36,19 @@ $custom_restapi_requests = array(
     },
   ),
   new RequestRestApiModel(
+    "/app/banners", "GET",
+    "uygulama için bannerları döndürür (return: [...banners])",
+    function($req) {
+      $banners = array();
+      if( get_option('hhgsun_mobile_banners') ) {
+        foreach (get_option('hhgsun_mobile_banners') as $key => $value) {
+          $banners[] = $value;
+        }
+      }
+      return array('success' => true, 'data' => $banners);
+    },
+  ),
+  new RequestRestApiModel(
     "/user/favorites", "GET",
     "userid kullanıcısının favorileri (request: ?userid=999) (return: [list:id])",
     function($req) {
@@ -110,15 +123,6 @@ $custom_restapi_requests = array(
       return array('success' => true, 'data' => "Şifre sıfırlama bağlantısı kayıtlı e-posta adresinize gönderildi");
     },
   ),
-  
-  /* new RequestRestApiModel(
-    "/favorites/(?P<id>\d+)", "GET",
-    "Favorilere eklenen ürünleri geri döner",
-    function($req) {
-      $data = array( 'kullanıcıya ait favori ilanlar', $req );
-      return array('success' => true, 'data' => $data);
-    },
-  ), */
 );
 
 class RequestRestApiModel {
@@ -136,8 +140,10 @@ class RequestRestApiModel {
 
 class SupportRestApiForFlutter {
 
-  public $pluginTitle = "HHGsun Support Rest Api for Flutter";
-  public $pluginSlug = "hhgsun-rest-api-flutter";
+  public $pluginTitle = "HHGsun Support for Flutter Mobile App";
+  public $pluginSlug = "hhgsun-support-for-flutter-mobile-app";
+  public $pluginIcon = "dashicons-nametag"; //https://developer.wordpress.org/resource/dashicons
+
   public $disabledPluginsCount = 0;
   public $requiredPlugins = array(
     array("woocommerce", "woocommerce.php", "automattic"),
@@ -201,14 +207,22 @@ class SupportRestApiForFlutter {
    * 
    */
   function dash_menu_add_custom_page() {
-    //add_menu_page($this->pluginTitle, $this->pluginTitle, "delete_posts", $this->pluginSlug, array($this, 'theme_setting_page_render') , 'dashicons-hammer', 80 );
-    add_submenu_page(
-      "options-general.php",
+    add_menu_page(
       $this->pluginTitle,
       $this->pluginTitle,
       "delete_posts",
       $this->pluginSlug,
-      array($this, 'theme_setting_page_render'),
+      array($this, 'render_plugin_settings_page'),
+      $this->pluginIcon,
+      80
+    );
+    add_submenu_page(
+      $this->pluginSlug,
+      "Bannerlar",
+      "Bannerlar",
+      "delete_posts",
+      $this->pluginSlug . '-bannerlar',
+      array($this, 'render_plugin_banners_page'),
       1
     );
     add_action( 'admin_init', array($this, 'register_plugin_custom_settings') );
@@ -223,9 +237,11 @@ class SupportRestApiForFlutter {
     register_setting( 'theme_settings_group_data', 'setting_footer_desc' );
     register_setting( 'theme_settings_group_data', 'setting_yapim_asamasinda' );
     register_setting( 'theme_settings_group_data', 'setting_yapim_asamasinda_url' );
+
+    register_setting( 'theme_settings_group_data', 'hhgsun_mobile_banners' );
   }
 
-  function theme_setting_page_render() { ?>
+  function render_plugin_settings_page() { ?>
     <style>
       details {
         border: 1px solid #dddddd;
@@ -269,7 +285,11 @@ class SupportRestApiForFlutter {
     </style>
     <div class="wrap">
 
-      <h1><?php echo $this->pluginTitle; ?></h1>
+      <h1>
+        <span class="dashicons <?php echo $this->pluginIcon; ?>" style="font-size: 35px; padding: 0 15px 0 0;"></span>
+        <?php echo $this->pluginTitle; ?>
+      </h1>
+      <p>Bu eklenti flutter mobil uygulaması ile sağlıklı iletişim kurulması için geliştirilmiştir.</p>
   
       <?php
         if($this->requiredPlugins) {
@@ -368,6 +388,10 @@ class SupportRestApiForFlutter {
       }
       ?>
 
+      <p id="footer-left" class="alignleft">
+        <span id="footer-thankyou">Developed by <a href="https://hhgsun.wordpress.com/" target="_blank">HHGsun</a></span>
+      </p>
+
     </div><!-- /.wrap -->
   
     <script>
@@ -424,6 +448,143 @@ class SupportRestApiForFlutter {
   <?php 
   }
 
+  function render_plugin_banners_page() { ?>
+    <style>
+      input[type=color] {
+        display:inline-block;
+      }
+      .ui-state-highlight {
+        background:#dedede;
+      }
+      .clear-flex{
+        flex:100%;
+      }
+    </style>
+    <div class="wrap">
+      <h1>
+        <span class="dashicons dashicons-images-alt" style="font-size: 35px; padding: 0 15px 0 0;"></span>
+        Mobil Uygulama için Bannerlar
+      </h1>
+      <p>Mobil uygulamada gösterilmek istenen bannerları buradan kontrol edebilirsiniz.</p>
+
+      <form class="theme-dash" method="post" action="options.php">
+        <?php 
+        settings_fields( 'theme_settings_group_data' );
+        do_settings_sections( 'theme_settings_group_data' );
+        ?>
+
+        <table class="wp-list-table widefat fixed striped table-view-list users">
+          <thead>
+            <tr>
+              <th scope="col" id="name" class="manage-column check-column" style="vertical-align:middle;padding:8px 10px;">Taşı</th>
+              <th scope="col" id="name" class="manage-column column-name">Başlık</th>
+              <th scope="col" id="name" class="manage-column column-name">Banner Url</th>
+              <th scope="col" id="name" class="manage-column column-name">Kategori ID</th>
+              <th scope="col" id="name" class="manage-column column-name">Etiket ID</th>
+              <th scope="col" id="name" class="manage-column check-column" style="vertical-align:middle;padding:8px 10px;">Sil</th>
+            </tr>
+          </thead>
+          <tbody id="hhgsun_mobile_banner_list">
+            <?php if(get_option('hhgsun_mobile_banners')) {
+              foreach (get_option('hhgsun_mobile_banners') as $key => $value) { ?>
+                <tr id="banner-<?php echo $key; ?>">
+                  <td>
+                    <span class="move-btn dashicons dashicons-sort"></span>
+                  </td>
+                  <td>
+                    <input type="text" name="hhgsun_mobile_banners[<?php echo $key; ?>][title]" value="<?php echo esc_attr( $value['title'] ); ?>" placeholder="Başlık" />
+                  </td>
+                  <td>
+                    <input type="text" name="hhgsun_mobile_banners[<?php echo $key; ?>][image_url]" value="<?php echo esc_attr( $value['image_url'] ); ?>" placeholder="Banner Resim Url" />
+                  </td>
+                  <td>
+                    <input type="text" name="hhgsun_mobile_banners[<?php echo $key; ?>][cat_id]" value="<?php echo esc_attr( $value['cat_id'] ); ?>" placeholder="Kategori ID" />
+                  </td>
+                  <td>
+                    <input type="text" name="hhgsun_mobile_banners[<?php echo $key; ?>][tag_id]" value="<?php echo esc_attr( $value['tag_id'] ); ?>" placeholder="Etiket ID" />
+                  </td>
+                  <td>
+                    <span class="btn_delete_banner"><span class="dashicons dashicons-trash"></span></span>
+                  </td>
+                </tr>
+            <?php } } ?>
+
+          </tbody>
+        </table>
+
+        <section>
+          <p>
+            <button type="button" class="button btn-banner-new">Yeni Ekle</button>
+          </p>
+        </section>
+        <div class="theme-dash-savebtn"><?php submit_button(); ?></div>
+      </form>
+
+      <p id="footer-left" class="alignleft">
+        <span id="footer-thankyou">Developed by <a href="https://hhgsun.wordpress.com/" target="_blank">HHGsun</a></span>
+      </p>
+
+    </div><!-- /.wrap -->
+
+    <script>
+      jQuery(document).ready(function($){
+        // ui sortable move
+        $('tbody').sortable({
+          items: ">tr",
+          appendTo: "parent",
+          opacity: 1,
+          containment: "document",
+          placeholder: "placeholder-style",
+          cursor: "move",
+          delay: 150,
+          start: function(event, ui) {
+            $(this).find('.placeholder-style td:nth-child(2)').addClass('hidden-td')
+            ui.helper.css('display', 'table')
+          },
+          stop: function(event, ui) {
+            ui.item.css('display', '')
+          }
+        });
+
+        $('.btn-banner-new').click(function(){
+          var keyItem = Date.now();
+          var newItem = `
+            <tr id="banner-${keyItem}">
+              <td>
+                <span class="move-btn dashicons dashicons-sort"></span>
+              </td>
+              <td>
+                <input type="text" name="hhgsun_mobile_banners[${keyItem}][title]" value="" placeholder="Başlık" />
+              </td>
+              <td>
+                <input type="text" name="hhgsun_mobile_banners[${keyItem}][image_url]" value="" placeholder="Banner Resim Url" />
+              </td>
+              <td>
+                <input type="text" name="hhgsun_mobile_banners[${keyItem}][cat_id]" value="" placeholder="Kategori ID" />
+              </td>
+              <td>
+                <input type="text" name="hhgsun_mobile_banners[${keyItem}][tag_id]" value="" placeholder="Etiket ID" />
+              </td>
+              <td>
+                <span class="btn_delete_banner"><span class="dashicons dashicons-trash"></span></span>
+              </td>
+            </tr>
+            `;
+          $('#hhgsun_mobile_banner_list').append(newItem);
+        });
+        $(document).on('click', '.btn_delete_banner', function(){
+          var sor = confirm('Kaldırmak istediğinize eminmisiniz?');
+          if(sor){
+            console.log($(this).parent());
+            var itemParent = $(this).parent().parent()[0];
+            itemParent.remove();
+          }
+        });
+      });
+    </script>
+  
+  <?php 
+  }
 
 }
 

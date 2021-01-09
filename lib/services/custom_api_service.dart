@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:ecommerceapp/models/banner_home.dart';
 import 'package:ecommerceapp/models/cocart_item.dart';
 import 'package:ecommerceapp/models/products.dart';
 import 'package:http/http.dart' as http;
@@ -86,7 +87,8 @@ class CustomApiService {
     });
   }
 
-  static Future<CustomResponseData<List<CoCartItem>>> deleteCart(String cartItemKey) {
+  static Future<CustomResponseData<List<CoCartItem>>> deleteCart(
+      String cartItemKey) {
     isRefreshCart = true;
     return _request(
             "/item?return_cart=true&cart_key=" +
@@ -209,6 +211,16 @@ class CustomApiService {
 
   static bool isFav(int productid) {
     return favoriteProducts.where((p) => p.id == productid).isNotEmpty;
+  }
+
+  // BANNERS
+  static Future<CustomResponseData<List<BannerHome>>> getBanners() async {
+    CustomApiService.isRefreshFavorites = true;
+    return CustomApiService._request("/app/banners", type: REQUEST_TYPE.GET)
+        .then((res) {
+      return CustomResponseData.fromJson(res);
+    }).then((res) => CustomResponseData(true,
+            List.from(res.data).map((e) => BannerHome.fromJson(e)).toList()));
   }
 
   // GENERAL DATA

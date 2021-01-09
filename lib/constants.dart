@@ -1,4 +1,5 @@
 import 'package:ecommerceapp/languages.dart';
+import 'package:ecommerceapp/models/banner_home.dart';
 import 'package:ecommerceapp/models/cocart_item.dart';
 import 'package:ecommerceapp/models/customer.dart';
 import 'package:ecommerceapp/models/order.dart';
@@ -135,6 +136,7 @@ WooCustomer loggedInCustomer;
 List<WooProductCategory> categories = new List<WooProductCategory>();
 List<WooProduct> featuredProducts = new List<WooProduct>();
 List<WooProduct> yenilikler = new List<WooProduct>();
+List<BannerHome> bannersHome = new List<BannerHome>();
 
 List<WooProduct> favoriteProducts = new List<WooProduct>();
 bool isRefreshCart = true;

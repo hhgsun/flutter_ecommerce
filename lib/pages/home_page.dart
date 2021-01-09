@@ -1,6 +1,9 @@
 import 'package:ecommerceapp/constants.dart';
 import 'package:ecommerceapp/models/products.dart';
 import 'package:ecommerceapp/pages/product_detail_page.dart';
+import 'package:ecommerceapp/pages/product_list_page.dart';
+import 'package:ecommerceapp/services/custom_api_service.dart';
+import 'package:ecommerceapp/widgets/search_comp.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
@@ -29,6 +32,44 @@ class _HomePageState extends State<HomePage> {
         }
       });
     }
+
+    if (bannersHome == null || bannersHome.length == 0) {
+      CustomApiService.getBanners().then((value) {
+        if (value.data != null && value.data.length > 0) {
+          setState(() {
+            bannersHome = value.data;
+          });
+        }
+      });
+    }
+  }
+
+  Widget renderBannersHome() {
+    if (bannersHome.length > 0)
+      return Column(
+        children: bannersHome
+            .map((banner) => GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => ProductListPage(
+                          title: banner.title,
+                          catId: banner.catId,
+                          tagId: banner.tagId,
+                        ),
+                      ),
+                    );
+                  },
+                  child: Card(
+                    child: Container(
+                      width: MediaQuery.of(context).size.width,
+                      child: Image.network(banner.imageUrl),
+                    ),
+                  ),
+                ))
+            .toList(),
+      );
+    return CircularProgressIndicator();
   }
 
   Column _widgets(List<WooProduct> list) => Column(
@@ -60,11 +101,13 @@ class _HomePageState extends State<HomePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            SearchBox(),
+            Divider(height: 10.0),
             Container(
               margin: EdgeInsets.fromLTRB(15, 15, 15, 5),
               child: Text(
                 "Öne Çıkanlar",
-                style: TextStyle(color: colorDark, fontSize: 18),
+                style: TextStyle(color: colorDark, fontSize: 16),
                 textAlign: TextAlign.left,
               ),
             ),
@@ -126,7 +169,16 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             Divider(),
-            Text("Yenilikler", style: TextStyle(fontWeight: FontWeight.bold)),
+            renderBannersHome(),
+            Divider(),
+            Container(
+              margin: EdgeInsets.fromLTRB(15, 15, 15, 5),
+              child: Text(
+                "Yenilikler",
+                style: TextStyle(color: colorDark, fontSize: 18),
+                textAlign: TextAlign.left,
+              ),
+            ),
             _widgets(yenilikler),
           ],
         ),
