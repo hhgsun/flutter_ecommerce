@@ -215,13 +215,21 @@ class CustomApiService {
 
   // BANNERS
   static Future<CustomResponseData<List<BannerHome>>> getBanners() async {
-    CustomApiService.isRefreshFavorites = true;
     return CustomApiService._request("/app/banners", type: REQUEST_TYPE.GET)
         .then((res) {
       return CustomResponseData.fromJson(res);
     }).then((res) => CustomResponseData(true,
             List.from(res.data).map((e) => BannerHome.fromJson(e)).toList()));
   }
+
+  static Future<CustomResponseData<List<BannerHome>>> getCatBanners() async {
+    return CustomApiService._request("/app/home-cats-tags", type: REQUEST_TYPE.GET)
+        .then((res) {
+      return CustomResponseData.fromJson(res);
+    }).then((res) => CustomResponseData(true,
+            List.from(res.data).map((e) => BannerHome.fromJson(e)).toList()));
+  }
+
 
   // GENERAL DATA
 

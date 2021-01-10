@@ -42,6 +42,16 @@ class _HomePageState extends State<HomePage> {
         }
       });
     }
+
+    if (homeCats == null || homeCats.length == 0) {
+      CustomApiService.getCatBanners().then((value) {
+        if (value.data != null && value.data.length > 0) {
+          setState(() {
+            homeCats = value.data;
+          });
+        }
+      });
+    }
   }
 
   Widget renderBannersHome() {
@@ -69,7 +79,10 @@ class _HomePageState extends State<HomePage> {
                 ))
             .toList(),
       );
-    return CircularProgressIndicator();
+    return Container(
+      height: MediaQuery.of(context).size.width / 2,
+      child: Center(child: CircularProgressIndicator()),
+    );
   }
 
   Column _widgets(List<WooProduct> list) => Column(
@@ -96,29 +109,55 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SearchBox(),
-            Divider(height: 10.0),
-            Container(
-              margin: EdgeInsets.fromLTRB(15, 15, 15, 5),
-              child: Text(
-                "Öne Çıkanlar",
-                style: TextStyle(color: colorDark, fontSize: 16),
-                textAlign: TextAlign.left,
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          AppBar(
+            backgroundColor: Colors.transparent,
+            shadowColor: Colors.transparent,
+            leading: Text(''),
+            title: Container(
+              height: 40,
+              padding: EdgeInsets.only(bottom: 5),
+              child: Image(
+                image: AssetImage('assets/images/head-logo.png'),
+                fit: BoxFit.contain,
               ),
             ),
-            Container(
-              height: 200,
-              child: ListView(
-                scrollDirection: Axis.horizontal,
-                children: featuredProducts
-                    .map((f) => Container(
+            centerTitle: true,
+          ),
+          SearchBox(),
+          Divider(height: 10.0),
+          renderHomeCatsTags(),
+          Container(
+            margin: EdgeInsets.fromLTRB(15, 15, 15, 5),
+            child: Text(
+              "Öne Çıkanlar",
+              style: TextStyle(
+                color: colorDark,
+                fontSize: Theme.of(context).textTheme.headline5.fontSize,
+                fontWeight: FontWeight.w600,
+              ),
+              textAlign: TextAlign.left,
+            ),
+          ),
+          Container(
+            height: 200,
+            child: ListView(
+              scrollDirection: Axis.horizontal,
+              children: featuredProducts
+                  .map((f) => GestureDetector(
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => ProductDetailPage(f),
+                            ),
+                          );
+                        },
+                        child: Container(
                           width: MediaQuery.of(context).size.width - 40.0,
-                          margin: EdgeInsets.fromLTRB(10, 10, 5, 10),
+                          margin: EdgeInsets.fromLTRB(10, 2, 5, 10),
                           child: Stack(
                             overflow: Overflow.clip,
                             children: [
@@ -164,25 +203,95 @@ class _HomePageState extends State<HomePage> {
                             borderRadius:
                                 BorderRadius.all(Radius.circular(10.0)),
                           ),
-                        ))
-                    .toList(),
-              ),
+                        ),
+                      ))
+                  .toList(),
             ),
-            Divider(),
-            renderBannersHome(),
-            Divider(),
-            Container(
-              margin: EdgeInsets.fromLTRB(15, 15, 15, 5),
-              child: Text(
-                "Yenilikler",
-                style: TextStyle(color: colorDark, fontSize: 18),
-                textAlign: TextAlign.left,
+          ),
+          Divider(),
+          renderBannersHome(),
+          Divider(),
+          Container(
+            margin: EdgeInsets.fromLTRB(15, 15, 15, 5),
+            child: Text(
+              "Yenilikler",
+              style: TextStyle(
+                color: colorDark,
+                fontSize: Theme.of(context).textTheme.headline5.fontSize,
+                fontWeight: FontWeight.w600,
               ),
+              textAlign: TextAlign.left,
             ),
-            _widgets(yenilikler),
-          ],
-        ),
+          ),
+          _widgets(yenilikler),
+        ],
       ),
+    );
+  }
+
+  Widget renderHomeCatsTags() {
+    double itemWidth = 100.0;
+    double itemHeight = 130.0;
+    if (homeCats.length > 0)
+      return Container(
+        height: itemHeight,
+        child: ListView(
+          scrollDirection: Axis.horizontal,
+          children: homeCats
+              .map(
+                (c) => GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => ProductListPage(
+                          title: c.title,
+                          catId: c.catId,
+                          tagId: c.tagId,
+                        ),
+                      ),
+                    );
+                  },
+                  child: Padding(
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 8.0, vertical: 3.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Container(
+                          height: itemHeight - 30.0,
+                          width: itemWidth,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                blurRadius: 5,
+                                color: Colors.black12,
+                                offset:
+                                    Offset(0, 0), // changes position of shadow
+                              ),
+                            ],
+                          ),
+                          child: CircleAvatar(
+                            backgroundImage: NetworkImage(c.imageUrl),
+                          ),
+                        ),
+                        Container(
+                          width: itemWidth,
+                          margin: EdgeInsets.only(top: 3.0),
+                          alignment: Alignment.center,
+                          child: Text(c.title, overflow: TextOverflow.ellipsis),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              )
+              .toList(),
+        ),
+      );
+    return Container(
+      height: itemHeight,
+      child: Center(child: CircularProgressIndicator()),
     );
   }
 }

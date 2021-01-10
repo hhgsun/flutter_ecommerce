@@ -137,6 +137,7 @@ List<WooProductCategory> categories = new List<WooProductCategory>();
 List<WooProduct> featuredProducts = new List<WooProduct>();
 List<WooProduct> yenilikler = new List<WooProduct>();
 List<BannerHome> bannersHome = new List<BannerHome>();
+List<BannerHome> homeCats = new List<BannerHome>();
 
 List<WooProduct> favoriteProducts = new List<WooProduct>();
 bool isRefreshCart = true;

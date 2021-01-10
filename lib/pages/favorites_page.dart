@@ -39,8 +39,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
     super.initState();
   }
 
-  @override
-  Widget build(BuildContext context) {
+  Widget renderBody() {
     if (!isLoad) {
       return Center(child: CircularProgressIndicator());
     }
@@ -84,5 +83,27 @@ class _FavoritesPageState extends State<FavoritesPage> {
               );
             }),
           );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        AppBar(
+          backgroundColor: Colors.transparent,
+          shadowColor: Colors.transparent,
+          leading: Text(''),
+          leadingWidth: 0,
+          title: Text(
+            getText("tab_favs"),
+            style: TextStyle(
+              color: colorDark,
+              fontSize: Theme.of(context).textTheme.headline5.fontSize,
+            ),
+          ),
+        ),
+        renderBody(),
+      ],
+    );
   }
 }

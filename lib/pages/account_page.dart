@@ -14,7 +14,7 @@ class AccountPage extends StatefulWidget {
 }
 
 class _AccountPageState extends State<AccountPage> {
-  WooCustomer currUser;
+  WooCustomer currUser = new WooCustomer();
   bool isLoadOrders = true;
 
   void getOrders() {
@@ -50,13 +50,21 @@ class _AccountPageState extends State<AccountPage> {
         length: 2,
         child: Column(
           children: <Widget>[
-            Container(
-              color: Colors.white,
-              child: ListTile(
-                title: Text(currUser.firstName + ' ' + currUser.lastName),
-                subtitle: Text(currUser.email),
-                trailing: IconButton(
-                    icon: Icon(Icons.logout),
+            AppBar(
+              backgroundColor: Colors.transparent,
+              shadowColor: Colors.transparent,
+              leading: Text(''),
+              leadingWidth: 0,
+              title: Text(
+                getText("tab_account"),
+                style: TextStyle(
+                  color: colorDark,
+                  fontSize: Theme.of(context).textTheme.headline5.fontSize,
+                ),
+              ),
+              actions: [
+                IconButton(
+                    icon: Icon(Icons.logout, color: colorLightDart),
                     onPressed: () {
                       showDialogCustom(context,
                           title: 'Çıkış Yap',
@@ -69,7 +77,7 @@ class _AccountPageState extends State<AccountPage> {
                                 onPressed: () {
                                   Navigator.pop(context);
                                   woocommerce.logUserOut();
-                                  loggedInCustomer = new WooCustomer();
+                                  loggedInCustomer = null;
                                   Navigator.of(context).pushReplacement(
                                     MaterialPageRoute(
                                         builder: (context) => LoginPage()),
@@ -78,23 +86,26 @@ class _AccountPageState extends State<AccountPage> {
                                 child: Text('Çıkış Yap'))
                           ]);
                     }),
+              ],
+            ),
+            Container(
+              child: ListTile(
+                title: Text(currUser.firstName + ' ' + currUser.lastName),
+                subtitle: Text(currUser.email),
               ),
             ),
             Container(
               height: 50,
-              child: AppBar(
-                backgroundColor: Colors.white,
-                bottom: TabBar(
-                  labelColor: Colors.black,
-                  tabs: [
-                    Tab(
-                      text: 'Siparişlerim',
-                    ),
-                    Tab(
-                      text: 'Bilgilerim',
-                    ),
-                  ],
-                ),
+              child: TabBar(
+                labelColor: Colors.black,
+                tabs: [
+                  Tab(
+                    text: 'Siparişlerim',
+                  ),
+                  Tab(
+                    text: 'Bilgilerim',
+                  ),
+                ],
               ),
             ),
             Expanded(

@@ -49,6 +49,19 @@ $custom_restapi_requests = array(
     },
   ),
   new RequestRestApiModel(
+    "/app/home-cats-tags", "GET",
+    "uygulama için seçilen kategori veya etiket listesini döndürür (return: [...catstags])",
+    function($req) {
+      $catstags = array();
+      if( get_option('hhgsun_mobile_home_cats') ) {
+        foreach (get_option('hhgsun_mobile_home_cats') as $key => $value) {
+          $catstags[] = $value;
+        }
+      }
+      return array('success' => true, 'data' => $catstags);
+    },
+  ),
+  new RequestRestApiModel(
     "/user/favorites", "GET",
     "userid kullanıcısının favorileri (request: ?userid=999) (return: [list:id])",
     function($req) {
@@ -216,6 +229,17 @@ class SupportRestApiForFlutter {
       $this->pluginIcon,
       80
     );
+    
+    add_submenu_page(
+      $this->pluginSlug,
+      "Seçilmiş Kategoriler",
+      "Seçilmiş Kategoriler",
+      "delete_posts",
+      $this->pluginSlug . '-secilmis-kats',
+      array($this, 'render_plugin_secilmis_kategoriler_page'),
+      1
+    );
+
     add_submenu_page(
       $this->pluginSlug,
       "Bannerlar",
@@ -225,6 +249,7 @@ class SupportRestApiForFlutter {
       array($this, 'render_plugin_banners_page'),
       1
     );
+
     add_action( 'admin_init', array($this, 'register_plugin_custom_settings') );
     add_action( "admin_enqueue_scripts", function(){
       wp_enqueue_script('jquery-ui-sortable');
@@ -238,9 +263,11 @@ class SupportRestApiForFlutter {
     register_setting( 'theme_settings_group_data', 'setting_yapim_asamasinda' );
     register_setting( 'theme_settings_group_data', 'setting_yapim_asamasinda_url' );
 
-    register_setting( 'theme_settings_group_data', 'hhgsun_mobile_banners' );
+    register_setting( 'theme_settings_group_data_2', 'hhgsun_mobile_home_cats' );
+    register_setting( 'theme_settings_group_data_3', 'hhgsun_mobile_banners' );
   }
 
+  // ANA AYARLAR SAYFASI
   function render_plugin_settings_page() { ?>
     <style>
       details {
@@ -448,6 +475,149 @@ class SupportRestApiForFlutter {
   <?php 
   }
 
+  // SEÇİLMİŞ KATEGORİLER
+  function render_plugin_secilmis_kategoriler_page() { ?>
+    <style>
+      input[type=color] {
+        display:inline-block;
+      }
+      .ui-state-highlight {
+        background:#dedede;
+      }
+      .clear-flex{
+        flex:100%;
+      }
+    </style>
+    <div class="wrap">
+      <h1>
+        <span class="dashicons dashicons-images-alt" style="font-size: 35px; padding: 0 15px 0 0;"></span>
+        Mobil Uygulama için Anasayfadaki Kategoriler/Etiketler
+      </h1>
+      <p>
+        Mobil uygulamanın anasayfasında gösterilmek istenen kategori veya etiketleri buradan kontrol edebilirsiniz.
+        <small>Mobilde Kategori ID ve Etiket ID ye göre ürünler listelenir. Kategori ID dolu ise önceliklidir.</small>
+      </p>
+
+      <form class="theme-dash" method="post" action="options.php">
+        <?php 
+        settings_fields( 'theme_settings_group_data_2' );
+        do_settings_sections( 'theme_settings_group_data_2' );
+        ?>
+
+        <table class="wp-list-table widefat fixed striped table-view-list users">
+          <thead>
+            <tr>
+              <th scope="col" id="name" class="manage-column check-column" style="vertical-align:middle;padding:8px 10px;">Taşı</th>
+              <th scope="col" id="name" class="manage-column column-name">Başlık</th>
+              <th scope="col" id="name" class="manage-column column-name">Resim Url</th>
+              <th scope="col" id="name" class="manage-column column-name">Kategori ID</th>
+              <th scope="col" id="name" class="manage-column column-name">Etiket ID</th>
+              <th scope="col" id="name" class="manage-column check-column" style="vertical-align:middle;padding:8px 10px;">Sil</th>
+            </tr>
+          </thead>
+          <tbody id="hhgsun_mobile_seckat_list">
+            <?php if(get_option('hhgsun_mobile_home_cats')) {
+              foreach (get_option('hhgsun_mobile_home_cats') as $key => $value) { ?>
+                <tr id="seckat-<?php echo $key; ?>">
+                  <td>
+                    <span class="move-btn dashicons dashicons-sort"></span>
+                  </td>
+                  <td>
+                    <input type="text" name="hhgsun_mobile_home_cats[<?php echo $key; ?>][title]" value="<?php echo esc_attr( $value['title'] ); ?>" placeholder="Başlık" />
+                  </td>
+                  <td>
+                    <input type="text" name="hhgsun_mobile_home_cats[<?php echo $key; ?>][image_url]" value="<?php echo esc_attr( $value['image_url'] ); ?>" placeholder="Banner Resim Url" />
+                  </td>
+                  <td>
+                    <input type="text" name="hhgsun_mobile_home_cats[<?php echo $key; ?>][cat_id]" value="<?php echo esc_attr( $value['cat_id'] ); ?>" placeholder="Kategori ID" />
+                  </td>
+                  <td>
+                    <input type="text" name="hhgsun_mobile_home_cats[<?php echo $key; ?>][tag_id]" value="<?php echo esc_attr( $value['tag_id'] ); ?>" placeholder="Etiket ID" />
+                  </td>
+                  <td>
+                    <span class="btn_delete_seckat"><span class="dashicons dashicons-trash"></span></span>
+                  </td>
+                </tr>
+            <?php } } ?>
+
+          </tbody>
+        </table>
+
+        <section>
+          <p>
+            <button type="button" class="button btn-seckat-new">Yeni Ekle</button>
+          </p>
+        </section>
+        <div class="theme-dash-savebtn"><?php submit_button(); ?></div>
+      </form>
+
+      <p id="footer-left" class="alignleft">
+        <span id="footer-thankyou">Developed by <a href="https://hhgsun.wordpress.com/" target="_blank">HHGsun</a></span>
+      </p>
+
+    </div><!-- /.wrap -->
+
+    <script>
+      jQuery(document).ready(function($){
+        // ui sortable move
+        $('tbody').sortable({
+          items: ">tr",
+          appendTo: "parent",
+          opacity: 1,
+          containment: "document",
+          placeholder: "placeholder-style",
+          cursor: "move",
+          delay: 150,
+          start: function(event, ui) {
+            $(this).find('.placeholder-style td:nth-child(2)').addClass('hidden-td')
+            ui.helper.css('display', 'table')
+          },
+          stop: function(event, ui) {
+            ui.item.css('display', '')
+          }
+        });
+
+        $('.btn-seckat-new').click(function(){
+          var keyItem = Date.now();
+          var newItem = `
+            <tr id="seckat-${keyItem}">
+              <td>
+                <span class="move-btn dashicons dashicons-sort"></span>
+              </td>
+              <td>
+                <input type="text" name="hhgsun_mobile_home_cats[${keyItem}][title]" value="" placeholder="Başlık" />
+              </td>
+              <td>
+                <input type="text" name="hhgsun_mobile_home_cats[${keyItem}][image_url]" value="" placeholder="Resim Url" />
+              </td>
+              <td>
+                <input type="text" name="hhgsun_mobile_home_cats[${keyItem}][cat_id]" value="" placeholder="Kategori ID" />
+              </td>
+              <td>
+                <input type="text" name="hhgsun_mobile_home_cats[${keyItem}][tag_id]" value="" placeholder="Etiket ID" />
+              </td>
+              <td>
+                <span class="btn_delete_seckat"><span class="dashicons dashicons-trash"></span></span>
+              </td>
+            </tr>
+            `;
+          $('#hhgsun_mobile_seckat_list').append(newItem);
+        });
+        $(document).on('click', '.btn_delete_seckat', function(){
+          var sor = confirm('Kaldırmak istediğinize eminmisiniz?');
+          if(sor){
+            console.log($(this).parent());
+            var itemParent = $(this).parent().parent()[0];
+            itemParent.remove();
+          }
+        });
+      });
+    </script>
+  
+  <?php 
+  }
+
+  // BANNERS PAGE
   function render_plugin_banners_page() { ?>
     <style>
       input[type=color] {
@@ -465,12 +635,15 @@ class SupportRestApiForFlutter {
         <span class="dashicons dashicons-images-alt" style="font-size: 35px; padding: 0 15px 0 0;"></span>
         Mobil Uygulama için Bannerlar
       </h1>
-      <p>Mobil uygulamada gösterilmek istenen bannerları buradan kontrol edebilirsiniz.</p>
+      <p>
+        Mobil uygulamada gösterilmek istenen bannerları buradan kontrol edebilirsiniz.
+        <small>Mobilde Kategori ID ve Etiket ID ye göre ürünler listelenir. Kategori ID dolu ise önceliklidir.</small>
+      </p>
 
       <form class="theme-dash" method="post" action="options.php">
         <?php 
-        settings_fields( 'theme_settings_group_data' );
-        do_settings_sections( 'theme_settings_group_data' );
+        settings_fields( 'theme_settings_group_data_3' );
+        do_settings_sections( 'theme_settings_group_data_3' );
         ?>
 
         <table class="wp-list-table widefat fixed striped table-view-list users">
@@ -478,7 +651,7 @@ class SupportRestApiForFlutter {
             <tr>
               <th scope="col" id="name" class="manage-column check-column" style="vertical-align:middle;padding:8px 10px;">Taşı</th>
               <th scope="col" id="name" class="manage-column column-name">Başlık</th>
-              <th scope="col" id="name" class="manage-column column-name">Banner Url</th>
+              <th scope="col" id="name" class="manage-column column-name">Resim Url</th>
               <th scope="col" id="name" class="manage-column column-name">Kategori ID</th>
               <th scope="col" id="name" class="manage-column column-name">Etiket ID</th>
               <th scope="col" id="name" class="manage-column check-column" style="vertical-align:middle;padding:8px 10px;">Sil</th>

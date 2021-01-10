@@ -12,17 +12,20 @@ class SearchBox extends StatelessWidget {
       },
       child: Container(
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10.0),
-          border: Border.all(color: colorPrimary),
-        ),
+            borderRadius: BorderRadius.circular(10.0),
+            /* border: Border.all(color: Colors.black26), */
+            color: Colors.white),
         margin: EdgeInsets.all(10.0),
         padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 15.0),
         child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            SizedBox(width: 5.0),
-            Icon(Icons.search, color: colorPrimary),
-            SizedBox(width: 15.0),
-            Text('Ürün Araması Yapın')
+            Padding(
+              padding: const EdgeInsets.only(left: 10.0),
+              child: Text('Ürün Arayın',
+                  style: TextStyle(color: Colors.black26)),
+            ),
+            Icon(Icons.search, color: Colors.black26),
           ],
         ),
       ),

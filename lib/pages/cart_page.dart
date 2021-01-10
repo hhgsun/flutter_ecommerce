@@ -60,8 +60,7 @@ class _CartPageState extends State<CartPage> {
     super.initState();
   }
 
-  @override
-  Widget build(BuildContext context) {
+  Widget renderBody() {
     if (loggedInCustomer == null) {
       return Center(
         child: FormHelper.button("Giriş Yap", () {
@@ -112,47 +111,67 @@ class _CartPageState extends State<CartPage> {
         );
       }
     }
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          SizedBox(height: 20),
-          Column(
-            children: (cartItems != null && cartItems.length > 0)
-                ? cartItems.map((p) {
-                    return ListTile(
-                      leading: Image.network(p.productImage),
-                      title: Text(p.productName),
-                      subtitle:
-                          Text(p.quantity.toString() + ' x ' + p.productPrice),
-                      trailing: IconButton(
-                        icon: Icon(Icons.clear),
-                        onPressed: () {
-                          CustomApiService.deleteCart(p.key).then((res) {
-                            this.getCart();
-                            this.getTotals();
-                            setState(() {
-                              cartItems = res.data;
-                            });
+    return Column(
+      children: [
+        SizedBox(height: 20),
+        Column(
+          children: (cartItems != null && cartItems.length > 0)
+              ? cartItems.map((p) {
+                  return ListTile(
+                    leading: Image.network(p.productImage),
+                    title: Text(p.productName),
+                    subtitle:
+                        Text(p.quantity.toString() + ' x ' + p.productPrice),
+                    trailing: IconButton(
+                      icon: Icon(Icons.clear),
+                      onPressed: () {
+                        CustomApiService.deleteCart(p.key).then((res) {
+                          this.getCart();
+                          this.getTotals();
+                          setState(() {
+                            cartItems = res.data;
                           });
-                        },
-                      ),
-                    );
-                  }).toList()
-                : [],
+                        });
+                      },
+                    ),
+                  );
+                }).toList()
+              : [],
+        ),
+        (_totals != null && _totals.total.isNotEmpty)
+            ? ListTile(
+                title: Text("TOPLAM"),
+                subtitle: Text(_totals.total),
+              )
+            : CircularProgressIndicator(),
+        Divider(height: 50),
+        (cartItems.length > 0 && _totals != null)
+            ? FormHelper.button("Sepeti Onayla", this.sepetiOnayla)
+            : FormHelper.button("...", () {}),
+        Divider(height: 50),
+      ],
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        AppBar(
+          backgroundColor: Colors.transparent,
+          shadowColor: Colors.transparent,
+          leading: Text(''),
+          leadingWidth: 0,
+          title: Text(
+            getText("tab_cart"),
+            style: TextStyle(
+              color: colorDark,
+              fontSize: Theme.of(context).textTheme.headline5.fontSize,
+            ),
           ),
-          (_totals != null && _totals.total.isNotEmpty)
-              ? ListTile(
-                  title: Text("TOPLAM"),
-                  subtitle: Text(_totals.total),
-                )
-              : CircularProgressIndicator(),
-          Divider(height: 50),
-          (cartItems.length > 0 && _totals != null)
-              ? FormHelper.button("Sepeti Onayla", this.sepetiOnayla)
-              : FormHelper.button("...", () {}),
-          Divider(height: 50),
-        ],
-      ),
+        ),
+        renderBody()
+      ],
     );
   }
 
