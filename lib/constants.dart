@@ -144,3 +144,4 @@ bool isRefreshCart = true;
 List<CoCartItem> cartItems = List<CoCartItem>();
 bool isRefreshOrders = true;
 List<WooOrder> orders = new List<WooOrder>();
+int perPage = 10; // ürün listelemede tek seferde kaç ürün gösterileceği

@@ -18,25 +18,50 @@ class ProductListPage extends StatefulWidget {
 class _ProductListPageState extends State<ProductListPage> {
   List<WooProduct> productList = new List<WooProduct>();
   bool isLoad = false;
+  bool isMoreBtn = true;
+  bool isMoreLoading = false;
+  int _page = 1;
 
-  @override
-  void initState() {
-    super.initState();
-    setState(() {
-      isLoad = false;
-    });
+  void loadProducts({int page = 1}) {
+    if (!isMoreLoading) {
+      setState(() {
+        isLoad = false;
+      });
+    }
     if (widget.catId.isNotEmpty && widget.catId != "") {
-      woocommerce.getProducts(category: widget.catId).then((value) {
+      woocommerce
+          .getProducts(category: widget.catId, perPage: perPage, page: page)
+          .then((value) {
         setState(() {
-          isLoad = true;
-          this.productList = value;
+          value.forEach((element) {
+            this.productList.add(element);
+          });
+          if (value.length < perPage) {
+            this.isMoreBtn = false;
+          }
+          if (!isMoreLoading) {
+            this.isLoad = true;
+          } else {
+            this.isMoreLoading = false;
+          }
         });
       });
     } else if (widget.tagId.isNotEmpty && widget.tagId != "") {
-      woocommerce.getProducts(tag: widget.tagId).then((value) {
+      woocommerce
+          .getProducts(tag: widget.tagId, perPage: perPage, page: page)
+          .then((value) {
         setState(() {
-          isLoad = true;
-          this.productList = value;
+          value.forEach((element) {
+            this.productList.add(element);
+          });
+          if (value.length < perPage) {
+            this.isMoreBtn = false;
+          }
+          if (!isMoreLoading) {
+            this.isLoad = true;
+          } else {
+            this.isMoreLoading = false;
+          }
         });
       });
     } else {
@@ -46,6 +71,12 @@ class _ProductListPageState extends State<ProductListPage> {
     }
   }
 
+  @override
+  void initState() {
+    this.loadProducts();
+    super.initState();
+  }
+
   Widget renderBody(context) {
     if (!this.isLoad) {
       return Center(
@@ -53,7 +84,38 @@ class _ProductListPageState extends State<ProductListPage> {
       );
     }
     if (this.productList.length > 0) {
-      return ProductGridviewComp(this.productList);
+      return SingleChildScrollView(
+        child: Column(
+          children: [
+            ProductGridviewComp(this.productList),
+            this.isMoreBtn
+                ? !this.isMoreLoading
+                    ? FlatButton(
+                        height: 50.0,
+                        onPressed: () {
+                          setState(() {
+                            this.isMoreLoading = true;
+                          });
+                          this._page = this._page + 1;
+                          this.loadProducts(page: this._page);
+                        },
+                        child: Text('Daha Fazla'),
+                      )
+                    : Container(
+                        height: 50.0,
+                        child: Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                      )
+                : this._page > 1
+                    ? Container(
+                        height: 50.0,
+                        child: Text('Liste Sonu'),
+                      )
+                    : SizedBox(height: 50.0),
+          ],
+        ),
+      );
     } else {
       return Center(
         child: Text("Ürün bulunmamaktadır."),
