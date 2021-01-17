@@ -49,13 +49,15 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
             padding: i == 0
                 ? EdgeInsets.fromLTRB(15.0, 1.0, 1.0, 1.0)
                 : EdgeInsets.all(1.0),
-            color: colorLightDart.withOpacity(0.08),
             child: Image.network(_product.images[i].src),
           ),
         ));
       }
 
       return Container(
+        color: _product.images.length > 1
+            ? colorLightDart.withOpacity(0.3)
+            : colorLightDart.withOpacity(0.08),
         height: MediaQuery.of(context).size.width - 30.0,
         child: ListView(
           scrollDirection: Axis.horizontal,
@@ -64,6 +66,23 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
       );
     }
     return Center(child: Text('Ürüne ait görsel bulunmamaktadır'));
+  }
+
+  Widget renderAttributes() {
+    if (_product.attributes != null && _product.attributes.length > 0) {
+      return Column(
+        children: _product.attributes
+            .map((attr) => ListTile(
+                  title: Text(attr.name),
+                  subtitle: Row(
+                    children:
+                        attr.options.map((op) => Text(op + ', ')).toList(),
+                  ),
+                ))
+            .toList(),
+      );
+    }
+    return Text('');
   }
 
   @override
@@ -86,7 +105,6 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
         child: Column(
           children: [
             renderImages(),
-            // Text("Satışta: " + _product.onSale.toString()),
             Container(
               padding: EdgeInsets.fromLTRB(20.0, 20.0, 20.0, 0),
               child: Column(
@@ -134,8 +152,19 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                 ],
               ),
             ),
-            AddToCartComp(_product), // add to cart
-            SizedBox(height: 20),
+            _product.stockStatus == 'instock'
+                ? AddToCartComp(_product) // add to cart
+                : Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.mood_bad_sharp, color: colorPrimary),
+                      SizedBox(width: 5.0),
+                      Text('Stokta yok', style: TextStyle(color: colorPrimary))
+                    ],
+                  ),
+            Divider(),
+            renderAttributes(),
+            Divider(),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20.0),
               child: Text(

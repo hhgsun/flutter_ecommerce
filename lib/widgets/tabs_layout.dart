@@ -45,7 +45,7 @@ class _TabsLayoutState extends State<TabsLayout> {
           ],
         ),
         bottomNavigationBar: Container(
-          height: 60.0,
+          height: 56.0,
           decoration: BoxDecoration(
             boxShadow: [BoxShadow(blurRadius: 1, color: Colors.black12)],
             color: Colors.white,
@@ -72,7 +72,7 @@ class _TabsLayoutState extends State<TabsLayout> {
             tabs: [
               Tab(
                 icon: Icon(Icons.home_filled, size: tabIconSize),
-                iconMargin: EdgeInsets.only(bottom: 5),
+                iconMargin: EdgeInsets.only(bottom: 2),
                 child: Text(
                   getText("tab_home"),
                   style: TextStyle(fontSize: tabFontSize),
@@ -80,7 +80,7 @@ class _TabsLayoutState extends State<TabsLayout> {
               ),
               Tab(
                 icon: Icon(Icons.category_rounded, size: tabIconSize),
-                iconMargin: EdgeInsets.only(bottom: 5),
+                iconMargin: EdgeInsets.only(bottom: 2),
                 child: Text(
                   getText("tab_cats"),
                   style: TextStyle(fontSize: tabFontSize),
@@ -88,7 +88,7 @@ class _TabsLayoutState extends State<TabsLayout> {
               ),
               Tab(
                 icon: Icon(Icons.star_rate_rounded, size: tabIconSize),
-                iconMargin: EdgeInsets.only(bottom: 5),
+                iconMargin: EdgeInsets.only(bottom: 2),
                 child: Text(
                   getText("tab_favs"),
                   style: TextStyle(fontSize: tabFontSize),
@@ -123,7 +123,7 @@ class _TabsLayoutState extends State<TabsLayout> {
                         : Text(''),
                   ],
                 ),
-                iconMargin: EdgeInsets.only(bottom: 5),
+                iconMargin: EdgeInsets.only(bottom: 2),
                 child: Text(
                   getText("tab_cart"),
                   style: TextStyle(fontSize: tabFontSize),
@@ -131,7 +131,7 @@ class _TabsLayoutState extends State<TabsLayout> {
               ),
               Tab(
                 icon: Icon(Icons.person, size: tabIconSize),
-                iconMargin: EdgeInsets.only(bottom: 5),
+                iconMargin: EdgeInsets.only(bottom: 2),
                 child: Text(
                   getText("tab_account"),
                   style: TextStyle(fontSize: tabFontSize),
@@ -140,18 +140,6 @@ class _TabsLayoutState extends State<TabsLayout> {
             ],
           ),
         ),
-        /* drawer: Drawer(
-          child: ListView(
-            children: [
-              ListTile(
-                title: Text("data"),
-              ),
-              ListTile(
-                title: Text("data"),
-              )
-            ],
-          ),
-        ), */
       ),
     );
   }

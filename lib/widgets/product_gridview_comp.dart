@@ -67,7 +67,7 @@ class ProductGridviewComp extends StatelessWidget {
                 renderRating(context, this.productList[index].averageRating),
                 Row(
                   children: [
-                    this.productList[index].regularPrice != null
+                    this.productList[index].regularPrice != null && this.productList[index].regularPrice != this.productList[index].price
                         ? Text(
                             this.productList[index].regularPrice + ' TL',
                             style: TextStyle(
@@ -93,21 +93,5 @@ class ProductGridviewComp extends StatelessWidget {
     return Column(
       children: this.twoColumnWidgetGenerate(context).toList(),
     );
-
-    /* var mediaQueryData = MediaQuery.of(context);
-    double widthScreen = mediaQueryData.size.width;
-    double heightScreen = mediaQueryData.size.height;
-
-    return GridView.count(
-      crossAxisCount: 2,
-      crossAxisSpacing: 7.0,
-      mainAxisSpacing: 7.0,
-      padding: EdgeInsets.all(5.0),
-      childAspectRatio: widthScreen / (heightScreen - 200), //0.8,
-      children: List.generate(
-        this.productList.length,
-        (index) => this.renderItem(context, index),
-      ),
-    ); */
   }
 }

@@ -490,7 +490,7 @@ class SupportRestApiForFlutter {
     </style>
     <div class="wrap">
       <h1>
-        <span class="dashicons dashicons-images-alt" style="font-size: 35px; padding: 0 15px 0 0;"></span>
+        <span class="dashicons dashicons-columns" style="font-size: 35px; padding: 0 15px 0 0;"></span>
         Mobil Uygulama için Anasayfadaki Kategoriler/Etiketler
       </h1>
       <p>
@@ -632,7 +632,7 @@ class SupportRestApiForFlutter {
     </style>
     <div class="wrap">
       <h1>
-        <span class="dashicons dashicons-images-alt" style="font-size: 35px; padding: 0 15px 0 0;"></span>
+        <span class="dashicons dashicons-excerpt-view" style="font-size: 35px; padding: 0 15px 0 0;"></span>
         Mobil Uygulama için Bannerlar
       </h1>
       <p>

@@ -884,7 +884,7 @@ class WooCommerce {
     }).forEach((k, v) {
       if (v != null) {
         payload[k] = v;
-        if(v is List) {
+        if (v is List) {
           payload[k] = '';
           v.forEach((i) {
             payload[k] = payload[k] + i.toString() + ',';
@@ -892,7 +892,8 @@ class WooCommerce {
         }
       }
     });
-    String meQueryPath = 'products/reviews' + getQueryString(payload, prefix: '?');
+    String meQueryPath =
+        'products/reviews' + getQueryString(payload, prefix: '?');
     List<WooProductReview> productReviews = [];
     //_setApiResourceUrl(path: 'products/reviews', queryParameters: payload);
     final response = await get(meQueryPath);

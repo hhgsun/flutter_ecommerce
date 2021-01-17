@@ -22,7 +22,7 @@ class _ProductListPageState extends State<ProductListPage> {
   bool isMoreLoading = false;
   int _page = 1;
 
-  void loadProducts({int page = 1}) {
+  void loadProducts({int page = 1, String order, String orderBy}) {
     if (!isMoreLoading) {
       setState(() {
         isLoad = false;
@@ -30,7 +30,13 @@ class _ProductListPageState extends State<ProductListPage> {
     }
     if (widget.catId.isNotEmpty && widget.catId != "") {
       woocommerce
-          .getProducts(category: widget.catId, perPage: perPage, page: page)
+          .getProducts(
+        category: widget.catId,
+        perPage: perPage,
+        page: page,
+        order: order,
+        orderBy: orderBy,
+      )
           .then((value) {
         setState(() {
           value.forEach((element) {
@@ -48,7 +54,13 @@ class _ProductListPageState extends State<ProductListPage> {
       });
     } else if (widget.tagId.isNotEmpty && widget.tagId != "") {
       woocommerce
-          .getProducts(tag: widget.tagId, perPage: perPage, page: page)
+          .getProducts(
+        tag: widget.tagId,
+        perPage: perPage,
+        page: page,
+        order: order,
+        orderBy: orderBy,
+      )
           .then((value) {
         setState(() {
           value.forEach((element) {
@@ -123,11 +135,69 @@ class _ProductListPageState extends State<ProductListPage> {
     }
   }
 
+  Widget renderFilterButton() {
+    return DropdownButtonHideUnderline(
+      child: DropdownButton(
+        isExpanded: true,
+        hint: Icon(Icons.filter_alt_sharp),
+        items: [
+          DropdownMenuItem(
+            child: Text('Önce en düşük fiyat'),
+            value: 1,
+          ),
+          DropdownMenuItem(
+            child: Text('Önce en yüksek fiyat'),
+            value: 2,
+          ),
+          DropdownMenuItem(
+            child: Text('En yeniler'),
+            value: 3,
+          ),
+          DropdownMenuItem(
+            child: Text('En eskiler'),
+            value: 4,
+          ),
+        ],
+        onChanged: (val) {
+          print(val);
+        },
+      ),
+    );
+  }
+
+  List<Map<String, String>> filterList = [
+    {'order': 'desc', 'orderby': 'date', 'title': "En yeniler"},
+    {'order': 'asc', 'orderby': 'date', 'title': "En eskiler"},
+    {'order': 'desc', 'orderby': 'price', 'title': "Önce en yüksek fiyat"},
+    {'order': 'asc', 'orderby': 'price', 'title': "Önce en düşük fiyat"},
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title != null ? widget.title : ''),
+        actions: [
+          PopupMenuButton(
+            tooltip: 'Sıralama',
+            icon: Icon(Icons.filter_alt_sharp),
+            onSelected: (val) {
+              setState(() {
+                this._page = 1;
+                this.productList = new List<WooProduct>();
+              });
+              this.loadProducts(order: val['order'], orderBy: val['orderby']);
+            },
+            itemBuilder: (BuildContext context) {
+              return filterList.map((Map filter) {
+                return PopupMenuItem<Map>(
+                  value: filter,
+                  child: Text(filter['title']),
+                );
+              }).toList();
+            },
+          ),
+        ],
       ),
       body: renderBody(context),
     );
