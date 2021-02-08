@@ -80,9 +80,11 @@ class CustomSearchDelegate extends SearchDelegate {
           return Center(child: Text("Sonuç Bulunamadı."));
         } else {
           var results = snapshot.data;
-          return Padding(
-            padding: const EdgeInsets.symmetric(vertical: 10.0),
-            child: ProductGridviewComp(results),
+          return SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 10.0),
+              child: ProductGridviewComp(results),
+            ),
           );
         }
       },

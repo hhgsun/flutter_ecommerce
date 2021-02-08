@@ -57,6 +57,11 @@ class _TabsContainerState extends State<TabsContainer> {
               _statsAuth = STATS_AUTH.login;
             });
           });
+        }).catchError((err) {
+          print(err);
+          setState(() {
+            _statsAuth = STATS_AUTH.logout;
+          });
         });
       } else {
         setState(() {
